@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>eToroX docs</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
+  <link rel="stylesheet" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css">
+
+  <style>
+  .markdown-section .gistdocs tr,.markdown-section .gistdocs td,.markdown-section .gistdocs th{
+    border:0;
+  }
+  .markdown-section swaggers.swagger tr,
+  .markdown-section swaggers.swagger td,
+  .markdown-section swaggers.swagger th{
+    border:0;
+  }
+  swaggers.swagger .try-out ,
+   swaggers.swagger .title span,
+   swaggers.swagger .scheme-container,
+   swaggers.swagger .info
+   {
+    display: none;
+  }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'eToroX',
+      repo: 'https://github.com/etorox/docs',
+      loadSidebar: true,
+      plugins: [
+      function(hook, vm) {
+        let i=0;
+        hook.init(function() {
+          changeWriteForGist();
+          // Called when the script starts running, only trigger once, no arguments,
+        });
+
+        hook.beforeEach(function(content) {
+          // Invoked each time before parsing the Markdown file.
+          // ...
+          return content;
+        });
+
+        hook.afterEach(function(html, next) {
+          html = html.replace(/\<pre.+?<code class="lang-embed-gist"\>(.+?)\<\/code\><\/pre\>/g , (full,url)=>{
+            return `<gistdocs class="gistdocs" data-id="${url}?elid=${i++}"></gistdocs >`
+          });
+          html = html.replace(/\<pre.+?<code class="lang-embed-swagger"\>([\s\S]*?)\<\/code\><\/pre\>/g , (full,config)=>{
+            return `<swaggers class="swagger" id="swagger-${i++}">${config}</swaggers>`
+          });
+          // Invoked each time after the Markdown file is parsed.
+          // beforeEach and afterEach support asynchronous。
+          // ...
+          // call `next(html)` when task is done.
+          next(html);
+        });
+
+        hook.doneEach(function() {
+          // Invoked each time after the data is fully loaded, no arguments,
+          handleGistLoading();
+          handleSwaggerLoading();
+          // ...
+        });
+
+        hook.mounted(function() {
+          // Called after initial completion. Only trigger once, no arguments.
+        });
+
+        hook.ready(function() {
+          // Called after initial completion, no arguments.
+        });
+      }
+  ]
+    }
+
+
+
+    function handleExternalScript() {
+      var container = Docsify.dom.getNode('#main');
+      var scripts = Docsify.dom.findAll(container, 'script');
+
+      for (var i = scripts.length; i--;) {
+        var script = scripts[i];
+
+        if (script && script.src) {
+          var newScript = document.createElement('script');
+
+          Array.prototype.slice.call(script.attributes).forEach(function (attribute) {
+            newScript[attribute.name] = attribute.value;
+          });
+
+          script.parentNode.insertBefore(newScript, script);
+          script.parentNode.removeChild(script);
+        }
+      }
+    }
+    function getQuery(stack){
+      const regex = /gist\.github\.com\/([\S]+?)\.js\?elid\=(\d+)/;
+      const query = {};
+      if ((m = regex.exec(stack)) !== null) {
+          query.url = m[1];
+          query.elid = m[2];
+          return query
+      }
+    }
+    function createGistCodeId({url,elid}){
+      return `${url}-${elid}`
+    }
+    function createGistPHCodeId({url,elid}){
+      return `${url}-ph-${elid}`
+    }
+    function insureElementChild(parentId , id , type){
+        let child = document.getElementById(id);
+        if (!child){
+          const parent = document.getElementById(parentId);
+          child = document.createElement(type);
+          child.id = id;
+          parent.appendChild(child);
+          return child
+        }
+        return child;
+    }
+    function changeWriteForGist(){
+      const nativeWrite = document.write;
+      document.write = function gistWrite(string){
+        const e = new Error;
+        const stack = e.stack;
+        const query = getQuery(stack);
+        if (query){
+          const child = insureElementChild(createGistPHCodeId(query) , createGistCodeId(query), 'gist-code');
+          child.innerHTML+=string;
+        }
+        else{
+          nativeWrite(string);
+        }
+      }
+    }
+
+    function handleGistLoading(){
+          var container = Docsify.dom.getNode('#main');
+          var gists = Docsify.dom.findAll(container, 'gistdocs');
+
+          for (var i = gists.length; i--;) {
+            var gist = gists[i];
+            var newScript = document.createElement('script');
+            const gistId = gist.dataset.id;
+            if (gist && gistId) {
+              newScript.src = gistId;
+              gist.appendChild(newScript);
+              const ph = document.createElement('div');
+              const query = getQuery(gistId);
+              ph.id = createGistCodeId(query);
+              gist.appendChild(ph);
+            }
+          }
+    }
+    function handleSwaggerLoading(){
+      var container = Docsify.dom.getNode('#main');
+          var swaggers = Docsify.dom.findAll(container, 'swaggers');
+          for (var i = swaggers.length; i--;) {
+            var swagger = swaggers[i];
+            const swaggerId = swagger.id;
+            if (swagger && swaggerId) {
+                let swaggerConfig = {};
+                try{
+                  swaggerConfig = JSON.parse(swagger.innerHTML.trim())
+                }
+                catch(err){
+
+                }
+                swaggerConfig = Object.assign(swaggerConfig , {
+                    dom_id: `#${swaggerId}`,
+                    presets: [
+                      SwaggerUIBundle.presets.apis,
+                      SwaggerUIBundle.SwaggerUIStandalonePreset
+                    ]
+                })
+                const ui = SwaggerUIBundle(swaggerConfig)
+            }
+          }
+    }
+  </script>
+  <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+</body>
+</html>

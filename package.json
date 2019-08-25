@@ -1,0 +1,23 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "init": "docsify init ./docs",
+    "serve": "docsify serve docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/etorox/docs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/etorox/docs/issues"
+  },
+  "homepage": "https://github.com/etorox/docs#readme",
+  "dependencies": {
+    "docsify-cli": "^4.3.0"
+  }
+}
