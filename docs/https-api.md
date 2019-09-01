@@ -31,7 +31,7 @@ In addition, there is a burst limit of 10 request per second.
 
 429 status code will be returned when either limit will be vaiolated.
 
-## Private API 
+## API parameters 
 All private API requests requires the following information:
 * `correlationId` - A random UUID, it's a unique identifier for each request, mainly used for support purposes.
 * `user-agent` - Some name for the application preforming this API request.

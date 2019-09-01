@@ -75,7 +75,7 @@ Name | Value
 --- | ---
 `apiKey`:string | The token api key.
 `nonce`:string | A unique UUID that was used when generating the signature.
-`timestamp`:int | Unix timestamp that was used when generating the signature.
+`timestamp`:int | Miliseconsd from epoch that was used when generating the signature.
 `signature`:string | The result of the signature process as described by [eToroX authentication](authentication)
 
 ### Stream - `subscribe`
@@ -93,14 +93,14 @@ Name | Value
 `channels`:string[] | The list of channels to be added to the requested stream.
 `event`:string | The name of the event to be selected from all channels to be added to the requested stream.
 
-The following subscription request (Witout signalR request format):
+The following subscription request (Without signalR request format):
 ```json
 {
     "channels":["btcusdx"],
     "event": "orderbook"
 }
 ```
-Produces events like the following event (Witout signalR response format):
+Produces events like the following event (Without signalR response format):
 ```json
 {
     "name": "order_created",
@@ -120,7 +120,7 @@ Produces events like the following event (Witout signalR response format):
 In addition to the signalR formatted frames, eToroX servers returns a key/value json formatted object with all fields and data for each event.
 While being very comfertable it significatlly increases bandwith.
 It's most recomended to activate a `fields` selector when creating the desired stream.
-As a result the client will recive the list of values he requested without the schema, client will be able to determine which of the values defines which property by the order he requested.
+As a result the client will recive the list of requested values without the schema, client will be able to determine which of the values defines which property by the requested order.
 
 The `subscribe` action recives the following mandatory and optional `fields` selector, fields as a json formatted key/value object:
 
