@@ -35,7 +35,7 @@ All private API requests require the following information:
 * `ex-access-key` - The token API key, a UUID.
 * `ex-access-sign`- The generated signature. See [eToroX authentication](authentication).
 * `ex-access-timestamp` - The UNIX  timestamp used to generate the signature. The timestamp should be as close to the current timestamp as possible, or servers will fail due to excessive time differences.
-* `ex-access-nonce` - A UUID that should not repeat. We use this IP to validate that a request does not repeat within a specific timeframe.
+* `ex-access-nonce` - A UUID that should not repeat. We use this ID to validate that a request does not repeat within a specific timeframe.
 
 ```embed-swagger
 {         

@@ -515,15 +515,15 @@ components:
         required: true
         schema:
           type: string
-        description: Random 5 digit number (10000 - 99999).
-        example: '18394'
+        description: A UUID that should not repeat. We use this ID to validate that a request does not repeat within a specific timeframe.
+        example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
       ex-access-timestamp:
         in: header
         name: ex-access-timestamp
         required: true
         schema:
           type: string
-        description: Milliseconds from epoch of the moment the singaure was created
+        description: Milliseconds since epoch of the moment the singaure was created
         example: '1567334955567'
       ex-access-sign:
           in: header
