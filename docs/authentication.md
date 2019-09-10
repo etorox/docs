@@ -1,96 +1,89 @@
 # eToroX Authentication
 
-At eToroX we value our clients security.
+At eToroX we value the security of our clients very highly.
 
-For each authenticated end-point, user must prove his identity.
-The authentication process was built to make sure user identity cannot be stolen or forged.
+At each authenticated end-point, users need to verify their identity. This authentication process was created to ensure that no user’s identity can be stolen or forged.
 
-> Don't share your private keys! eToroX will never ask you to share or send your private keys
+> Do not share your private keys! eToroX will never ask you to share or send your private keys.
 
 ## Authenticated end-points
-At the moment eToroX provides two transports of communications both are diffenernt in the interface these provide.
-Both share the same process and properties of authentication.
+eToroX currently provides two communications modes, both  with different interfaces, but sharing the same authentication processes and properties.
+
 Authenticated end-points:
 * [HTTPS authentication](https-api)
 * [Websockets authentication](websockets-api)
 
 
 ## Access to eToroX API
-Access to eToroX API allowed only to verified users.
-with *developer app* verified users can manage thier *Developer app* *API tokens* from the Website UI.
+Access to eToroX API is only permitted for verified users.  Verified developer app users can manage their *developer app API tokens* from the website UI.
 
 ### Developer APP
-*Developer app* enables access to eToroX API.
+The `Developer app` enables access to the eToroX API.
 
-Every *developer app* provides the following information:
+Every `developer app` provides the following information:
 * HTTPS API - A private DNS for https access.
-* Websockets - A private DNS for websocekts access
-The properties are always available from the trading API settings section on the Website UI.
+* WebSockets - A private DNS for websocket access. The properties are accessible from the trading API settings section on the website
 
-*At the moment any request for developer application is reviewed by costumers support and manually approved.*
+*Requests for developer apps are currently individually reviewed by Customer Support, and manually approved.*
 
 ### API tokens
-The *API tokens* are generated based on the *developer app*.
-User can manage multiple *API tokens*, each *API token* can be identified by custome meaningful token name.
-
-When tokens are generated, the following information will become accessible:
+`API tokens` are generated based on the `developer app`. Users can manage multiple `API tokens`, by identifying each `API token` with a customized token name.
+When tokens are generated, the following information becomes accessible:
 * API key - A UUID id of this token.
-* Private key - A private key used by signing action.
+* Private Key - A private key used for signing.
+*Important! This information cannot be retrieved and must be stored by the user*
 
-*This information cannot be retrieved and must be stored by the user*
-
-## Benifits of authentication process
-* Access to API granted by creating specifc *API tokens*.
-* *API token* can only be created with 2FA verification.
-* *API token* data only avilable during creation.
-* *API token* credentials comprised from an asymmetric RSA private/public key pair.
-* During *API token* creation user recived private key in order to sign data.
-* eToroX stores only the asymmetric public key _even read access to our servers will not provide attacker the ability to forge user identity_ .
-* As part of authentication process eToroX mitigates man in the middle attacks by using combination of TLS encription, timestamp and nonce validations with asymmetric signature signing - no sensitive information should be passed in API communication.
-* As part of authentication process eToroX mitigates replay attacks by verifying both nonce and timestamp verifications.
-* *API tokens* persmissions can be scoped when created - Scoping makes sure a token may be used only for specific actions.
-* *API tokens* detials are immutable these can always be deleted but never changed or retrived.
+## Benifits of Authentication Process
+* Access to API granted by creating specific `API tokens`.
+* `API token` can only be created with 2FA verification.
+* `API token` data only available during creation.
+* `API token` credentials are comprised of an asymmetric RSA private/public pair of keys.
+* During `API token` creation, the user  receives a private key,  to sign data.
+* eToroX stores only the asymmetric public key. Even if a user has Read Access to our servers, this information is completely inaccessible, and user identities cannot be forged. 
+* As part of the authentication process, eToroX mitigates "man-in-the-middle" attacks using a combination of TLS encryption, a timestamp and nonce (Number Only Used Once) validations with asymmetric signature signing. Note: Sensitive information should NEVER be passed in API communication.
+* As part of the authentication process, eToroX mitigates replay attacks by verifying both nonce and timestamp verifications.
+* `API tokens` permissions can be scoped when created. Scoping ensures that a token is only used for specific actions.
+* `API token` details are immutable. They can always be deleted, but never modified or retrieved.
 
 ## Authentication process
-Authenticaiton process requires the following paramters:
-* API key - A UUID identifies this token.
-* Private key - asymmetric RSA private key should *never* be shared.
-* Timestamp - Milliseconds from epoch of the moment the singaure was created (`1567334955567`).
-* Nonce - A UUID.
+The authentication process requires the following parameters:
+* API key - A UUID identifies this token
+* Private key - An asymmetric RSA private key that should never be shared
+* Timestamp - Number of milliseconds since epoch of the moment the signature was created (example: 1567334955567)
+* Nonce - A UUID
 
-eToroX servers verifies user identity based on:
-* API key. 
-* Signaute - details of how to create signature is in the following section.
-* Timestamp.
-* Nonce.
+eToroX servers verifies user identity based on the following:
+
+* API key
+* Signature For details about creating a signature, see the following section
+* Timestamp
+* Nonce
 
 ### Create a signature
-Asymetric signatures are generated by the user in order to prove to eToroX servers that the user has access to his private key.
-eToroX confirms this by running a similar but asymetric process with the public key equivalence.
-
+Asymmetric signatures are generated by the user to “prove” to the eToroX server that the user has access to their own private keys. eToroX then confirms this by running a similar but asymmetric process with the public key equivalence.
 The following parameters are used for signature generation:
-* API key.
-* Private key.
-* Nonce.
-* Milliseconds from epoch.
+* API key
+* Private key
+* Nonce
+* Milliseconds since epoch
 
 #### Private key
 The private keys generated by eToroX are:
 * `PKCS8` encoded.
-* `PEM` formated.
-* Chiper `AES-256-CBC`
+* `PEM` formatted.
+* Cipher `AES-256-CBC`
 * Empty string as the passphrase `` .
 
-*Some libreries may requires the user to convert the private key into different encoding, such convertion process is possible by using `openssl` command line tool.*
+*Some libraries may require the user to convert the private key into different encoding. This can be done by using the `openssl` command line tool.*
 
 #### Signing process
 
-The payload the user signs is a concatination of the `milliseconds from epoch` and `nonce`.
+The payload the user signs is a concatenation of the `milliseconds since epoch` and `nonce`.
 ```js
 const payload = `${timestamp}${nonce}`;
 ```
 
-The payload should be singed with a `SHA256` signature algorithm and result should be `base64` encoded.
+The payload should be signed with a `SHA256` signature algorithm and result should be `base64` encoded.
 
 ```js
 const payload = `${timestamp}${nonce}`;

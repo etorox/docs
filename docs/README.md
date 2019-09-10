@@ -1,10 +1,9 @@
 
 # eToroX API
 
-eToroX API allows customers to trade on the eToroX exchange via a REST API. The solution enables algo traders and programmers to send/cancel orders to buy/sell crypto assets and to retrieve account info, electronically. 
+eToroX API allows customers to trade on the eToroX exchange using a REST API solution, which allows algo traders and programmers to electronically send or cancel orders to buy/sell cryptoassets, and retrieve account information.
 
-eToroX manage all orders per market (price of 1 asset in second asset units). The system save the customers orders in several persistence storages as well as in the matching engine. The matching engine compare buy/sell orders and if match found (price of buy equal or higher than the price of sell order) the  orders are matched/executed and the exchange balances between the buyer and the seller happen. 
-The matching is being done using the price time provided.
+eToroX manages all orders per market. The system saves  customer orders in several persistence (permanent) storage, as well as in the matching engine. The matching engine compares buy/sell orders and if a match is found (a buy order price that is equal to or higher than the sell order price) the orders are matched and executed within the stated price timeframe.
 
 ## API Features
 * Get balance
@@ -14,28 +13,30 @@ The matching is being done using the price time provided.
 * Stream full orderbook
 * Stream current user trading feed
 
-## Matching enginge
+## Matching Engine
 
 
 ### Order life cycle
-Orders accepted by the system immediately after several validations. The validations include customer token verification and balance check. The acceptance of the new order generate a unique Id ant the requested get it as a response. The order state will be `pending`. 
-The new order is being saved in persistent storage as well. And its status will be changed to `open`. 
+Orders are accepted by the system after several validations, which include customer token verification and a balance check.
 
-The Order is transferred immediately to the matching engine and in case of match, executed without being placed in the engine storage. The requested will get a confirmation message upon successful completion of this operation and the order state will be changed to `executed`. 
-In case of match event, the matching engine update the database and will create a trade/exchange of funds between the buyer and the seller.
-The relevant customers will get a confirmation message upon execution.
-In case of partial execution, the order state will continue to be `open` but available volume (amount) will be decreased.  The partial executed amount will be saved in a dedicated storage and will be responded on the relevant REST API call. 
+A new order being accepted generates a unique ID, the requester of the order receives the order’s unique ID. The order’s state is now `pending`.
 
-Cancel order requests will be processed immediately after the validation of order existence and will be deleted from the  matching engine. The request will get a confirmation message after process completion. The order state will change to  `cancelled` in such case.
+The new order is then saved  in persistent storage where its status changes to `open`.
+The order is transferred immediately to the matching engine and if it matches another order, is executed without delay. The requester receives a confirmation message upon successful completion of this operation and the order state changes to `executed`. 
+
+If the match happens, the matching engine updates the database and creates a trade/exchange of funds between the buyer and the seller. The relevant customers will receive a confirmation message upon execution. 
+
+If this is only a partial execution, the order state will continue to be `open` but the available volume (base currency amount) will decrease. The partially executed amount is saved in dedicated storage area.
+Cancel order requests are processed immediately after the validation that an order exists and is deleted from the matching engine. The requester will receive a confirmation message after process completion. The order state then changes to `cancelled`.
 
 ## Data centers
-eToroX trading system front servers are located on GCP in region west europe. 
+eToroX trading system front servers are located on the GCP in western Europe.
 
 ## Authentication
-eToroX values security, all the authenticated API end-points are protect with a specific signature process that insures maximum security 
+eToroX values security very highly. All authenticated API end-points are protected with a specific signature process that ensures maximum security
+Read more about the authentication process in the section [eToroX authentication](authentication).
 
-Read more about the authentication process:
-[eToroX authentication](authentication)
+
 
 
 

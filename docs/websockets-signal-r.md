@@ -1,8 +1,8 @@
 # Websocket client SignalR
 
-SignalR client is the fastest way to integeate with eToroX streaming services.
+SignalR client is the fastest way to integrate with eToroX streaming services.
 
-Before starting the integration it's required to create from the website UI a token and use both `apiKey` and `privateKey`;
+Before starting the integration, you must create a token from the website UI, and use both `apiKey` and `privateKey`;
 ```js
     const apiKey = '825805c3-45d6-4fab-9b05-0844395ff3ef';
     const privateKey = `-----BEGIN ENCRYPTED PRIVATE KEY-----
@@ -39,13 +39,12 @@ await connection.start();
 ```
 ## Step 3 - Authentication
 
-At this step a wbsocket connection has already been created.
-User must identify with the `setup`action.
+At this stage, a WebSocket connection has already been created. The user must identify with the `setup` action.
 
-* Authentication process described by [eToroX authentication](authentication).
-* Websocket data, actions ans streams described by [Websockets API](websockets-api).
+* See the authentication process described in the section [eToroX authentication](authentication).
+* See WebSocket data, actions and streams, described in the [Websockets API](websockets-api).
 
-In order to identify it is first required to calculate the authentication parameters.
+Once you have the authentication parameters, you can now easily set up the connections
 ```js
     const {createSign} = require('crypto'); 
     const {v4} = require('uuid');

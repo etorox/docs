@@ -5,9 +5,9 @@ info:
   version: "1"
 tags:
   - name: Public API
-    description: API that can be accessed without authentication
+    description: An API that can be accessed without authentication.
   - name: Private API
-    description: API that can be accessed only with authentication
+    description: An API that can be accessed only with authentication.
 paths:
   /api/v1/timestamp:
     get:
