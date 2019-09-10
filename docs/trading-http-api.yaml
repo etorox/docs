@@ -523,8 +523,8 @@ components:
         required: true
         schema:
           type: string
-        description: The (unix)timestamp that was used to generate your signature.
-        example: '1554990910'
+        description: Milliseconds from epoch of the moment the singaure was created
+        example: '1567334955567'
       ex-access-sign:
           in: header
           name: ex-access-sign
