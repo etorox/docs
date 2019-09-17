@@ -17,7 +17,13 @@ Before starting the integration, you must create a token from the website UI, an
 
 #### ** C# **
 
-soon!
+```embed-gist
+{
+    "url":"https://gist.github.com/etorox/d2abbcff59395b4d52fdad5fe0dfde62.js",
+    "elid":"1",
+    "file":"step1-prepare.cs"
+}
+```
 
 #### ** Pyhton **
 
@@ -40,7 +46,13 @@ soon!
 
 #### ** C# **
 
-soon!
+```embed-gist
+{
+    "url":"https://gist.github.com/etorox/d2abbcff59395b4d52fdad5fe0dfde62.js",
+    "elid":"2",
+    "file":"step2-connect.cs"
+}
+```
 
 #### ** Pyhton **
 
@@ -68,7 +80,13 @@ At this stage, a WebSocket connection has already been created. The user must id
 
 #### ** C# **
 
-soon!
+```embed-gist
+{
+    "url":"https://gist.github.com/etorox/d2abbcff59395b4d52fdad5fe0dfde62.js",
+    "elid":"3",
+    "file":"step3-auth-signature.cs"
+}
+```
 
 #### ** Pyhton **
 
@@ -94,7 +112,13 @@ With the authentication parameters it's now very simple to setup the connections
 
 #### ** C# **
 
-soon!
+```embed-gist
+{
+    "url":"https://gist.github.com/etorox/d2abbcff59395b4d52fdad5fe0dfde62.js",
+    "elid":"4",
+    "file":"step4-setup.cs"
+}
+```
 
 #### ** Pyhton **
 
@@ -120,7 +144,13 @@ At this stage, a WebSocket connection has already been created and connection ha
 
 #### ** C# **
 
-soon!
+```embed-gist
+{
+    "url":"https://gist.github.com/etorox/d2abbcff59395b4d52fdad5fe0dfde62.js",
+    "elid":"5",
+    "file":"step5-subscribe.cs"
+}
+```
 
 #### ** Pyhton **
 
