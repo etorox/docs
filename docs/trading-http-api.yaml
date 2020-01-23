@@ -46,6 +46,8 @@ paths:
               example: 
                 - id: btcusd
                   name: BTC/USD
+                  ask_precision: 5
+                  bid_precision: 5
   /api/v1/instruments/{instrument-Id}/book:
     get:
       tags: 
@@ -134,8 +136,6 @@ paths:
           application/json; charset=utf-8:
             schema:
               $ref: '#/components/schemas/NewOrderRequest'
-            
-              
       responses:
         '200':
           description: 'OK'
@@ -170,10 +170,19 @@ paths:
             type: string
         - in: query
           name: instument_id
-          description: filter by specific instrument, if not provided assumed all instruments
+          description: Filter by specific instrument, if not provided assumed all instruments
           required: false
           schema:
             type: string
+        - in: query
+          name: order_by
+          description: Order by order creation asc/desc , if not provided default to desc
+          required: false
+          example: asc
+          schema:
+            enum: 
+              - asc
+              - desc
       responses:
         '200':
           description: 'OK'
@@ -234,7 +243,7 @@ paths:
     get:
       tags:
         - Private API
-      summary: Get a list of recent trades.
+      summary: Get a list of recent trades (Last 72 hours).
       parameters:
         - in: query
           name: instrument_id
@@ -247,9 +256,16 @@ paths:
           name: before
           schema:
             type: string
-          example: '8787997'
+          example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
           description: >
-            Trades are returned sorted by descending execution date. The before query will result a set of olders trades with id smaller than this number. 
+            Trades are returned sorted by descending execution date. The before query will result a set of newer trades. 
+        - in: query
+          name: to
+          schema:
+            type: string
+          example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
+          description: >
+            Trades are returned sorted by descending execution date. The to query will result a set of olders trades. 
         - in: query
           name: limit
           schema:
@@ -257,6 +273,13 @@ paths:
           example: 25
           description: >
             The number of returned trades limited by this value.    
+        - in: query
+          name: order_id
+          description: Filter trades that were executed from the specific order
+          required: false
+          example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
+          schema:
+            type: string
         - $ref: '#/components/parameters/correlationId'
         - $ref: '#/components/parameters/user-agent'
         - $ref: '#/components/parameters/ex-access-key'
@@ -434,8 +457,8 @@ paths:
           description: >
             The number of returned deposits limited by this value.
         - in: query
-          name: coin
-          description: filter by specific coin, if not provided assumed all coins.
+          name: currency
+          description: filter by specific currency, if not provided assumed all currencies.
           required: false
           schema:
             type: string
@@ -547,6 +570,10 @@ components:
           type: string
         name:
           type: string
+        ask_precision:
+          type: number
+        bid_precision:
+          type: number
     OrderState:
       type: string
       description: What is the status of the order
@@ -643,6 +670,9 @@ components:
         instrument_id:
           type: string
           description: Instrument id (btcusd, ethusd etc.)
+        avg_price:
+          type: string
+          description: The trades average executed prices
         state:
           $ref: '#/components/schemas/OrderState'
         side:
@@ -658,14 +688,33 @@ components:
         state: 'open'
         instrument_id: 'btcusd'
         volume: '0.03000000'  
-  
+        avg_price: '0.34'
         
     OrderCancelResponse:
        type: object
        properties:
         id:
           type: string
-          description: order id.
+          description: Unique Order Id
+        price:
+          type: string
+          description: Price per Target currency
+        volume:
+          type: string
+          description:  Amount of Trade currency to buy or sell
+        instrument_id:
+          type: string
+          description: Instrument id (btcusd, ethusd etc.)
+        avg_price:
+          type: string
+          description: The trades average executed prices
+        state:
+          $ref: '#/components/schemas/OrderState'
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        type:
+          type: string
+          description:  Limit or market
        example: 
         id: 'f40d68a2-d155-455d-97b8-a856cb00d86c'
         side: 'buy'
@@ -673,7 +722,8 @@ components:
         price: '0.20000000'
         state: 'pending cancellation'
         instrument_id: 'btcusd'
-        volume: '0.03000000'    
+        volume: '0.03000000'  
+        avg_price: '0.34'
     WithdrawalRequestResponse:
        type: object
        properties:
@@ -757,12 +807,12 @@ components:
     DepositsReport:
       type: object
       properties:
-        coin:
+        currency:
           type: string
           description: name of a coin i.e. btc
         amount:
           type: string
-          description: Amount of coins that were withdraw.
+          description: Amount of currencies that were withdraw.
         fee:
           type: string
           description: fees paid for the withdrawal.
@@ -780,7 +830,7 @@ components:
           description: status of the withdrawal request.
        
       example: 
-        coin:   'eth'
+        currency:   'eth'
         amount: '0.688'
         fee:    '0.002'
         txid:   'dfe3ca89e8ce658a6d527ef81d1ad1f4601dc6dc8a1856d9598cfc6d1c7e5f86'
@@ -795,7 +845,7 @@ components:
         coin:
           type: string
           example: 'BTC'
-          description: A valid currency name.
+          description: A valid coin name.
         amount:
           type: number
           description: Amount to withdraw
