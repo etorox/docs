@@ -119,6 +119,27 @@ paths:
                   balance: '80.2301373066930000'
                   available: '79.2266348066930000'
                   locked: '1.0035025000000000'
+  /api/v1/tradebalance:
+    get:
+      tags:
+        - Private API
+      summary: Get margin balance
+      parameters:
+        - $ref: '#/components/parameters/correlationId'
+        - $ref: '#/components/parameters/user-agent'
+        - $ref: '#/components/parameters/ex-access-key'
+        - $ref: '#/components/parameters/ex-access-sign'
+        - $ref: '#/components/parameters/ex-access-nonce'
+        - $ref: '#/components/parameters/ex-access-timestamp'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json; charset=utf-8:
+              schema:
+                  $ref: '#/components/schemas/TradeBalanceReport'
+        '404':
+          description: 'No margin currencies found for the account'
   /api/v1/orders:
     parameters:
       - $ref: '#/components/parameters/correlationId'
@@ -837,7 +858,60 @@ components:
         created_at: '2019-01-10T16:24:17.852Z'  
         confirmations: 0
         state: 'rejected'
+  
+    MarginStatus:
+      type: string
+      enum:
+        - ok
+        - warning
+        - liquidation
         
+    TradeBalanceReport:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: The time when trade balance was calculated.
+        total_balance_usdex:
+          type: string
+          description: Total balance in usdex.
+        total_credit_usdex:
+          type: string
+          description: Total margin in usdex.
+        margin_level:
+          type: string
+          description: Current margin level.
+        margin_level_warning:
+          type: string
+          description: The warning margin level at which notification message will be send.
+        margin_level_liquidation:
+          type: number
+          description: The liquidation margin level at which portfolio will be forcibly liquidated. 
+        margin_status:
+          $ref: '#/components/schemas/MarginStatus'
+        credit_currencies:
+          type: array
+          items:
+            properties:
+              currency:
+                type: string
+                description: The currency
+              unit:
+                type: string
+                description: The credit given
+          description: The list of currencies that has margin
+       
+      example: 
+        timestamp: '“2019-01-10T12:45:17.088Z”'
+        total_balance_usdex: '256.896'
+        total_credit_usdex: '126.32254'
+        margin_level: '2.033651318284132'
+        margin_level_warning: '0.15'  
+        margin_level_liquidation: '0.1'
+        margin_status: 'ok'
+        credit_currencies:
+          - currency: 'BTC'
+            credit: '2.25'
        
     NewWithdrawalRequest:
       type: object
@@ -894,4 +968,4 @@ components:
         fee:    '0.002'
         address: '16SCPYWidAKjARxeLjskihHJVzVLGoTzRw' 
         state: 'rejected'
-        created_at: '2019-01-10T16:24:17.852Z'  
+        created_at: '2019-01-10T16:24:17.852Z'
