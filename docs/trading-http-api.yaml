@@ -911,7 +911,7 @@ components:
         margin_status: 'ok'
         credit_currencies:
           - currency: 'BTC'
-            credit: '2.25'
+            unit: '2.25'
        
     NewWithdrawalRequest:
       type: object
