@@ -6,7 +6,7 @@ eToroX API allows customers to trade on the eToroX exchange using a REST API sol
 eToroX manages all orders per market. The system saves  customer orders in several persistence (permanent) storage, as well as in the matching engine. The matching engine compares buy/sell orders and if a match is found (a buy order price that is equal to or higher than the sell order price) the orders are matched and executed within the stated price timeframe.
 
 ## Support
-For any issues with API integration, please contact us at api@etorox.com.   
+For any issues with API integration, please contact us at customerservice@etorox.com    
 
 ## API Features
 * Get balance
