@@ -6,6 +6,7 @@ At each authenticated end-point, users need to verify their identity. This authe
 
 > Do not share your private keys! eToroX will never ask you to share or send your private keys.
 
+
 ## Authenticated end-points
 eToroX currently provides two communications modes, both  with different interfaces, but sharing the same authentication processes and properties.
 
@@ -89,6 +90,10 @@ The payload should be signed with a `SHA256` signature algorithm and result shou
 const payload = `${nonce}${timestamp}`;
 const signer = crypto.createSign('sha256');
 signer.update(payload);
-signature = signer.sign(privateKey, 'base64');
+signature = signer.sign({key: privateKey , passphrase : ''}, 'base64');
 ```
 
+### Troubleshooting
+
+* [Example of dummy signature process ](https://gist.github.com/etorox/457009e1e02bdf878225da09fdb64acf)
+* [Convert pkcs8 to pkcs1 using openssl native](https://gist.github.com/etorox/094eb6d22cf83d72218d2d28ff304bc4)
