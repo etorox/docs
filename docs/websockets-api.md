@@ -92,7 +92,7 @@ Name | Value
 The following subscription request (Without signalR request format):
 ```json
 {
-    "channels":["btcusdx"],
+    "channels":["btcusdex"],
     "event": "orderbook"
 }
 ```
@@ -100,7 +100,7 @@ Produces events like the following event (Without signalR response format):
 ```json
 {
     "name": "order_created",
-    "market": "btcusdx",
+    "market": "btcusdex",
     "volume": 11,
     "price": 0.23,
     //....// 
@@ -126,7 +126,7 @@ Name | Value
 The following subscription request (Without signalR request format):
 ```json
 {
-    "channels":["btcusdx"],
+    "channels":["btcusdex"],
     "event": "orderbook",
     "fields":["name" , "price" , "volume"]
 }
