@@ -13,7 +13,7 @@ For any issues with API integration, please contact us at customerservice@etorox
 * Manage orders
 * Withdrawal funds
 * Deposit funds
-* Stream full orderbook
+* Stream full orders book and trades
 * Stream current user trading feed
 
 ## Matching Engine

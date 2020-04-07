@@ -40,15 +40,15 @@ Any WebSocket compliant (`rfc6455`) client should be able to connect to eToroX s
 
 Currently users can choose one of the following clients for integration:
 * [SignalR](signal-r) (Cross platform ASP.NET Core SignalR) - The easiest approach, where SignalR handles most parts of the transport protocol for the user, leaving them only to handle actions required by eToroX.
-* Websocket - The user needs  to handle all transport protocol actions in addition to actions required by eToroX.
+* Websocket - The user needs to handle all transport protocol actions in addition to actions required by eToroX, only choose this approch if you know what you are doing and understand the SignalR message formatting, the SignalR client approch is the most recommended and documented.
 
-*eToroX currently only provides documentation for integration with the SignalR client. Documentation regarding integration details with plain Websocket will be provided at a future date*
+*eToroX currently only provides documentation for integration with the SignalR client.*
 
 ## Terminology
 Phrase | Meaning
 --- | --- 
 WebSocket protocol | The prefefined procedural methods of creating and maintaining a Websocket connection to eToroX servers, including frames and json formats defined by SignalR.
-Channel | A logical subject / source of information.
+Channel | A logical subject / source of information (described in the section [eToroX WebSockets channels](websockets-channels) ) .
 Event | A channel may stream multiple occurrences that have happened on that specific channel.
 Topic | A combination of a single channel and a single event.
 Result | A single result or multiple results from the same invocation.
@@ -86,14 +86,14 @@ The `subscribe` action receives the following mandatory fields as a json formatt
 
 Name | Value
 --- | ---
-`channels`:string[] | The list of channels to be added to the requested stream.
+`channels`:string[] | The list of channels to be added to the requested stream (described in the section [eToroX WebSockets channels](websockets-channels) ) .
 `event`:string | The name of the event to be selected from all channels to be added to the requested stream.
 
 The following subscription request (Without signalR request format):
 ```json
 {
     "channels":["btcusdex"],
-    "event": "orderbook"
+    "event": "marketData"
 }
 ```
 Produces events like the following event (Without signalR response format):
@@ -127,7 +127,7 @@ The following subscription request (Without signalR request format):
 ```json
 {
     "channels":["btcusdex"],
-    "event": "orderbook",
+    "event": "marketData",
     "fields":["name" , "price" , "volume"]
 }
 ```
