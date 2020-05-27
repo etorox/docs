@@ -86,7 +86,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/OrderBook'
               example: 
-                timestamp: '2019-01-10T12:45:17.088Z'
+                timestamp: 1589380157
+                snapshot_id: 4222124650664933
                 bids: [['295.96', '4.39088265']]
                 asks: [['295.97', '25.23542881']]
   /api/v1/balances:
@@ -608,6 +609,8 @@ components:
       type: object
       properties:
         timestamp:
+          type: number
+        snapshot_id:
           type: number
         bids:
           type: array
