@@ -4,3 +4,4 @@
 * [Websockets](websockets-api.md "Websockets")
     * [Websockets Channels](websockets-channels.md "Websockets Channels")
     * [Websockets SignalR](websockets-signal-r.md "Websockets SignalR")
+* [FIX Api](fix-api.md "FIX Api")
