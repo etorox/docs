@@ -11,7 +11,7 @@ tags:
 paths:
   /api/v1/timestamp:
     get:
-      tags: 
+      tags:
         - Public API
       summary: Get the server time
       responses:
@@ -21,10 +21,10 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/ServerTime'
-              example: 1566733151443          
+              example: 1566733151443
   /api/v1/instruments:
     get:
-      tags: 
+      tags:
         - Private API
       summary: Get all available instuments for trade.
       parameters:
@@ -43,14 +43,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Instrument'
-              example: 
+              example:
                 - id: btcusd
                   name: BTC/USD
                   ask_precision: 5
                   bid_precision: 5
   /api/v1/instruments/{instrument-Id}/book:
     get:
-      tags: 
+      tags:
         - Private API
       summary: Get Order book for specific Instrument
       parameters:
@@ -67,9 +67,9 @@ paths:
             type: integer
           description: >
             * 1 - Only the best bid and ask
-            
+
             * 50 - Top 50 bids and asks (aggregated by price)
-            
+
             * 100 - Top 100 (aggregated by price)
           example: 2
         - $ref: '#/components/parameters/correlationId'
@@ -85,11 +85,11 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/OrderBook'
-              example: 
+              example:
                 timestamp: 1589380157
                 snapshot_id: 4222124650664933
-                bids: [['295.96', '4.39088265']]
-                asks: [['295.97', '25.23542881']]
+                bids: ['295.96', '4.39088265']
+                asks: ['295.97', '25.23542881']
   /api/v1/balances:
     get:
       tags:
@@ -111,7 +111,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/balance'
-              example: 
+              example:
                 - currency: 'BTC'
                   balance: '0.0000000000000000'
                   available: '0.0000000000000000'
@@ -138,7 +138,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                  $ref: '#/components/schemas/TradeBalanceReport'
+                $ref: '#/components/schemas/TradeBalanceReport'
         '404':
           description: 'No margin currencies found for the account'
   /api/v1/orders:
@@ -182,8 +182,7 @@ paths:
           schema:
             type: number
           example: 25
-          description: >
-            The number of returned orders limited by this value.
+          description: The number of returned orders limited by this value.
         - in: query
           name: state
           description: The state of the orders to filter [open , cancelled , executed]
@@ -202,7 +201,7 @@ paths:
           required: false
           example: asc
           schema:
-            enum: 
+            enum:
               - asc
               - desc
       responses:
@@ -214,7 +213,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OrderReport'
-                  
+
   /api/v1/orders/{order-id}:
     parameters:
       - in: path
@@ -239,7 +238,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                  $ref: '#/components/schemas/OrderReport'
+                $ref: '#/components/schemas/OrderReport'
         '404':
           description: 'Order not found'
     delete:
@@ -252,14 +251,14 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-               $ref: '#/components/schemas/OrderCancelResponse'
+                $ref: '#/components/schemas/OrderCancelResponse'
         '404':
           description: 'Not found'
           content:
             application/json; charset=utf-8:
               schema:
                 type: string
-              example: 
+              example:
                 'Not found'
   /api/v1/trades:
     get:
@@ -280,21 +279,21 @@ paths:
             type: string
           example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
           description: >
-            Trades are returned sorted by descending execution date. The before query will result a set of newer trades. 
+            Trades are returned sorted by descending execution date. The before field accepts txid values and results a set of newer trades.
         - in: query
           name: to
           schema:
             type: string
           example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
           description: >
-            Trades are returned sorted by descending execution date. The to query will result a set of olders trades. 
+            Trades are returned sorted by descending execution date. The to query will result a set of older2 trades.
         - in: query
           name: limit
           schema:
             type: number
           example: 25
           description: >
-            The number of returned trades limited by this value.    
+            The number of returned trades limited by this value.
         - in: query
           name: order_id
           description: Filter trades that were executed from the specific order
@@ -317,19 +316,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Trade'
-          
+
   /api/v1/funds/deposits/{coin}/address:
     get:
       tags:
         - Private API
-      summary: Fetch deposit address. 
+      summary: Fetch deposit address.
       parameters:
         - in: path
           name: coin
           required: true
           schema:
             type: string
-          example: 'BTC'
+          example: 'btc'
         - $ref: '#/components/parameters/correlationId'
         - $ref: '#/components/parameters/user-agent'
         - $ref: '#/components/parameters/ex-access-key'
@@ -342,8 +341,8 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                  $ref: '#/components/schemas/DepositAddress'
-                  
+                $ref: '#/components/schemas/DepositAddress'
+
   /api/v1/funds/withdrawals:
     parameters:
       - $ref: '#/components/parameters/correlationId'
@@ -361,7 +360,7 @@ paths:
           application/json; charset=utf-8:
             schema:
               $ref: '#/components/schemas/NewWithdrawalRequest'
-            
+
       responses:
         '201':
           description: 'OK'
@@ -369,7 +368,7 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/WithdrawalRequestResponse'
-                
+
   /api/v1/reports/funds/withdrawals:
     parameters:
       - $ref: '#/components/parameters/correlationId'
@@ -381,7 +380,7 @@ paths:
     get:
       tags:
         - Private API
-      summary: Get historical withdrawals details. 
+      summary: Get historical withdrawals details.
       parameters:
         - in: query
           name: before
@@ -389,7 +388,7 @@ paths:
             type: string
           example: '883567c4a8bc9812970093b37169ff71ab8a2f17255013ee31577121f79a3fb4'
           description: >
-            Withdrawals are returned sorted by descending creation date. The before query will result with set of older withdrawals. 
+            Withdrawals are returned sorted by descending creation date. The before field accepts txid values and results a set of newer withdrawals.
         - in: query
           name: limit
           schema:
@@ -406,13 +405,13 @@ paths:
         - in: query
           name: created_at
           schema:
-           type: string
-          description: from created date and forward.   
+            type: string
+          description: from created date and forward.
         - in: query
           name: txid
           schema:
-           type: string
-          description: block chain transaction hash.     
+            type: string
+          description: block chain transaction hash.
       responses:
         '200':
           description: 'OK'
@@ -422,7 +421,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/WithdrawalsReport'
-  
+
   /api/v1/reports/funds/withdrawals/{id}:
     parameters:
       - in: path
@@ -447,10 +446,10 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                  $ref: '#/components/schemas/WithdrawalsReport'
+                $ref: '#/components/schemas/WithdrawalsReport'
         '404':
           description: 'Withdrawal request not found'
-          
+
   /api/v1/reports/funds/deposits:
     parameters:
       - $ref: '#/components/parameters/correlationId'
@@ -462,7 +461,7 @@ paths:
     get:
       tags:
         - Private API
-      summary: Get historical deposits details. 
+      summary: Get historical deposits details.
       parameters:
         - in: query
           name: before
@@ -470,7 +469,7 @@ paths:
             type: string
           example: '883567c4a8bc9812970093b37169ff71ab8a2f17255013ee31577121f79a3fb4'
           description: >
-            Deposits are returned sorted by descending creation date. The before query will result with set of older deposits. 
+            Deposits are returned sorted by descending creation date. The before query will result with set of older deposits.
         - in: query
           name: limit
           schema:
@@ -487,8 +486,8 @@ paths:
         - in: query
           name: created_at
           schema:
-           type: string
-          description: from created date and forward.   
+            type: string
+          description: from created date and forward.
       responses:
         '200':
           description: 'OK'
@@ -498,7 +497,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DepositsReport'
-  
+
   /api/v1/reports/funds/deposits/{txid}:
     parameters:
       - in: path
@@ -523,63 +522,80 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                  $ref: '#/components/schemas/DepositsReport'
+                $ref: '#/components/schemas/DepositsReport'
         '404':
           description: 'Deposit request not found'
-          
-                
+
+
 components:
   parameters:
-      correlationId:        
-        in: query
-        name: correlationId
-        required: true
-        schema:
-          type: string
-        description: Random UUID, act as unique identifier of the request logs.
-        example: 'curl'
-      user-agent:        
-        in: header
-        name: user-agent
-        required: true
-        schema:
-          type: string
-        description: Some name for app that use API
-        example: 'curl'
-      ex-access-key:
-        in: header
-        name: ex-access-key
-        required: true
-        schema:
-          type: string
-        description: The api key as a string.
-        example: 'ba9ce027-07c1-468f-b29b-874b2e828024'
-      ex-access-nonce:
-        in: header
-        name: ex-access-nonce
-        required: true
-        schema:
-          type: string
-        description: A UUID that should not repeat. We use this ID to validate that a request does not repeat within a specific timeframe.
-        example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
-      ex-access-timestamp:
-        in: header
-        name: ex-access-timestamp
-        required: true
-        schema:
-          type: string
-        description: Milliseconds since epoch of the moment the singaure was created
-        example: '1567334955567'
-      ex-access-sign:
-          in: header
-          name: ex-access-sign
-          required: true
-          schema:
-            type: string
-          description: >
-            The ex-access-sign header is generated by creating a sha256 RSA signature using the private key on the concatenated string (nonce + timestamp)  (where '+' represents string concatenation) and base64-encode the output. The timestamp value is the same as the ex-access-timestamp header.
-          example: 'THE_RESULT_BASE64'
+    correlationId:
+      in: query
+      name: correlationId
+      required: true
+      schema:
+        type: string
+      description: Random UUID, act as unique identifier of the request logs.
+      example: 'curl'
+    user-agent:
+      in: header
+      name: user-agent
+      required: true
+      schema:
+        type: string
+      description: Some name for app that use API
+      example: 'curl'
+    ex-access-key:
+      in: header
+      name: ex-access-key
+      required: true
+      schema:
+        type: string
+      description: The api key as a string.
+      example: 'ba9ce027-07c1-468f-b29b-874b2e828024'
+    ex-access-nonce:
+      in: header
+      name: ex-access-nonce
+      required: true
+      schema:
+        type: string
+      description: A UUID that should not repeat. We use this ID to validate that a request does not repeat within a specific timeframe.
+      example: 'ba9ce027-07c1-468f-b29b-874b2e818024'
+    ex-access-timestamp:
+      in: header
+      name: ex-access-timestamp
+      required: true
+      schema:
+        type: string
+      description: Milliseconds since epoch of the moment the singaure was created
+      example: '1567334955567'
+    ex-access-sign:
+      in: header
+      name: ex-access-sign
+      required: true
+      schema:
+        type: string
+      description: >
+        The ex-access-sign header is generated by creating a sha256 RSA signature using the private key on the concatenated string (nonce + timestamp)  (where '+' represents string concatenation) and base64-encode the output. The timestamp value is the same as the ex-access-timestamp header.
+      example: 'THE_RESULT_BASE64'
   schemas:
+    WithdrawalState:
+      type: string
+      enum:
+        - Prepared
+        - Submitted
+        - Cancelled
+        - Waiting for approval
+        - Suspected
+        - Rejected
+        - Processing
+        - Succeeded
+        - Failed
+    OrderType:
+      type: string
+      enum:
+        - limit
+        - market
     OrderSide:
       type: string
       enum:
@@ -599,10 +615,16 @@ components:
     OrderState:
       type: string
       description: What is the status of the order
-      enum: 
+      enum:
         - open
         - cancelled
         - executed
+    TimeInForce:
+      type: string
+      enum:
+        - gtd
+        - gtc
+        - ioc
     ServerTime:
       type: number
     OrderBook:
@@ -615,7 +637,7 @@ components:
         bids:
           type: array
           items:
-             oneOf:
+            oneOf:
               - type: string
                 description: price
               - type: string
@@ -623,13 +645,16 @@ components:
         asks:
           type: array
           items:
-             oneOf:
+            oneOf:
               - type: string
                 description: price
               - type: string
                 description: quantity
-              - type: integer
-                description: num-orders
+      example:
+        timestamp: 1589380157
+        snapshot_id: 4222124650664933
+        bids: ["295.96", "4.39088265"]
+        asks: ["305.81", "5.39324205"]
     NewOrderRequest:
       type: object
       properties:
@@ -644,11 +669,23 @@ components:
         volume:
           type: string
           description: Amount of Trade currency to buy or sell
+        type:
+          $ref: '#/components/schemas/OrderType'
+        time_in_force:
+          $ref: '#/components/schemas/TimeInForce'
       required:
         - instrument_id
         - side
         - price
         - size
+        - volume
+      example:
+        side: 'buy'
+        type: 'limit'
+        price: '8000.20000000'
+        instrument_id: 'btcusd'
+        volume: '0.03000000'
+        time_in_force: 'gtc'
     NewOrderResponse:
       type: object
       properties:
@@ -660,7 +697,7 @@ components:
           description: Price per Target currency
         volume:
           type: string
-          description:  Amount of Trade currency to buy or sell
+          description:  Amount of trade currency to buy or sell
         instrument_id:
           type: string
           description: Instrument id (btcusd, ethusd etc.)
@@ -669,17 +706,72 @@ components:
         side:
           $ref: '#/components/schemas/OrderSide'
         type:
+          $ref: '#/components/schemas/OrderType'
+        time_in_force:
+          $ref: '#/components/schemas/TimeInForce'
+        created_at:
           type: string
-          description:  Limit or market
-      example: 
+          description: Date of order creation.
+      example:
         id: 'f40d68a2-d155-455d-97b8-a856cb00d86c'
         side: 'buy'
         type: 'limit'
-        price: '0.20000000'
-        state: 'pending'
+        price: '8880.20000000'
+        state: 'open'
         instrument_id: 'btcusd'
         volume: '0.03000000'
+        time_in_force: 'gtc'
+        created_at: '2019-01-10T16:24:17.852Z'
     OrderReport:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Order Id
+        price:
+          type: string
+          description: Price per Target currency
+        volume:
+          type: string
+          description:  Amount of trade currency to buy or sell
+        origin_volume:
+          type: string
+          description:  Amount of original trade currency of the order
+        executed_volume:
+          type: string
+          description:  Amount of already executed trade currency
+        instrument_id:
+          type: string
+          description: Instrument id (btcusd, ethusd etc.)
+        avg_price:
+          type: string
+          description: The trades average executed prices
+        state:
+          $ref: '#/components/schemas/OrderState'
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        type:
+          $ref: '#/components/schemas/OrderType'
+        time_in_force:
+          $ref: '#/components/schemas/TimeInForce'
+        created_at:
+          type: string
+          description: Date of order creation
+      example:
+        id: 'f40d68a2-d155-455d-97b8-a856cb00d86c'
+        side: 'buy'
+        type: 'limit'
+        price: '7483.20000000'
+        state: 'open'
+        instrument_id: 'btcusd'
+        volume: '0.50000000'
+        origin_volume: '1.5000000'
+        executed_volume: '1'
+        avg_price: '0.34'
+        time_in_force: 'gtc'
+        created_at: '2020-01-10T16:24:17.852Z'
+
+    OrderCancelResponse:
       type: object
       properties:
         id:
@@ -702,65 +794,54 @@ components:
         side:
           $ref: '#/components/schemas/OrderSide'
         type:
+          $ref: '#/components/schemas/OrderType'
+        time_in_force:
+          $ref: '#/components/schemas/TimeInForce'
+        created_at:
           type: string
-          description:  Limit or market
-      example: 
+          description: Date of order creation
+      example:
         id: 'f40d68a2-d155-455d-97b8-a856cb00d86c'
         side: 'buy'
         type: 'limit'
-        price: '0.20000000'
-        state: 'open'
+        price: '8790.20000000'
+        state: 'cancelled'
         instrument_id: 'btcusd'
-        volume: '0.03000000'  
+        volume: '0.03000000'
         avg_price: '0.34'
-        
-    OrderCancelResponse:
-       type: object
-       properties:
-        id:
-          type: string
-          description: Unique Order Id
-        price:
-          type: string
-          description: Price per Target currency
-        volume:
-          type: string
-          description:  Amount of Trade currency to buy or sell
-        instrument_id:
-          type: string
-          description: Instrument id (btcusd, ethusd etc.)
-        avg_price:
-          type: string
-          description: The trades average executed prices
-        state:
-          $ref: '#/components/schemas/OrderState'
-        side:
-          $ref: '#/components/schemas/OrderSide'
-        type:
-          type: string
-          description:  Limit or market
-       example: 
-        id: 'f40d68a2-d155-455d-97b8-a856cb00d86c'
-        side: 'buy'
-        type: 'limit'
-        price: '0.20000000'
-        state: 'pending cancellation'
-        instrument_id: 'btcusd'
-        volume: '0.03000000'  
-        avg_price: '0.34'
+        time_in_force: 'gtc'
+        created_at: '2020-01-10T16:24:17.852Z'
     WithdrawalRequestResponse:
-       type: object
-       properties:
+      type: object
+      properties:
         id:
           type: string
-          description: withdrawal request.
-       example: 
+          description: Withdrawal request id.
+        coin:
+          type: string
+          description: Name of a coin i.e. btc
+        amount:
+          type: string
+          description: Amount of coins that were withdraw.
+        fee:
+          type: string
+          description: Fees paid for the withdrawal.
+        address:
+          type: string
+          description: Requested withdrawal address.
+        state:
+          $ref: '#/components/schemas/WithdrawalState'
+        created_at:
+          type: string
+          description: Date of request creation.
+
+      example:
         id: 'f40d68a2-d155-455d-97b8-a856cb00d86c'
         coin: 'btc'
         amount: '0.25'
         fee: '0.001'
         address: '1FfmbHfnpaZjKFvyi1okTjJJusN455paPH'
-        state: 'submitted'
+        state: 'Submitted'
         create_at: '2019-01-10T16:24:17.852Z'
     balance:
       type: object
@@ -774,10 +855,10 @@ components:
         available:
           type: string
           description:  Funds available to withdraw or trade.
-        hold:
+        locked:
           type: string
-          description:  Funds on hold (not available for use).
-      example: 
+          description:  Locked funds (not available for use).
+      example:
         currency: 'BTC'
         balance: '0.0000000000000000'
         available: '0.0000000000000000'
@@ -794,7 +875,7 @@ components:
           example: '19.00'
         volume:
           type: string
-          example: '0.01'  
+          example: '0.01'
         instrument_id:
           type: string
           example: 'btcusd'
@@ -804,7 +885,9 @@ components:
           example: '2019-01-04T21:19:28.578544Z'
         side:
           type: string
-          example: 'bid'  
+          enum:
+            - bid
+            - ask
         order_id:
           type: string
           example: 'ea577b0e-9754-4499-81c4-d9408cc32fbf'
@@ -814,20 +897,22 @@ components:
           description: Field indicates the fees charged for this individual trade.The fee taken from the buy amount.
         execution_type:
           type: string
-          example: 'maker'
+          enum:
+            - maker
+            - taker
 
     DepositAddress:
       type: object
       properties:
-         currency:
+        currency:
           type: string
           description: The type of currency
-          example: 'BTC'       
-         address:
+          example: 'btc'
+        address:
           type: string
           description: Deposit Address
           example: '0xYOUR_DEPOSIT_ADDRESS'
-                
+
     DepositsReport:
       type: object
       properties:
@@ -845,42 +930,52 @@ components:
           description: Unique alpha numeric string that represent a transaction hash on the block chain.
         created_at:
           type: string
-          description: Date of request creation.   
+          description: Date of request creation.
         confirmations:
           type: number
-          description: number of block chain confirmations.   
+          description: number of block chain confirmations.
         state:
           type: string
           description: status of the withdrawal request.
-       
-      example: 
+          enum:
+            - Prepared
+            - Submitted
+            - Cancelled
+            - Waiting for approval
+            - Suspected
+            - Rejected
+            - Processing
+            - Succeeded
+            - Failed
+
+      example:
         currency:   'eth'
         amount: '0.688'
         fee:    '0.002'
         txid:   'dfe3ca89e8ce658a6d527ef81d1ad1f4601dc6dc8a1856d9598cfc6d1c7e5f86'
-        created_at: '2019-01-10T16:24:17.852Z'  
+        created_at: '2019-01-10T16:24:17.852Z'
         confirmations: 0
         state: 'rejected'
-  
+
     MarginStatus:
       type: string
       enum:
         - ok
         - warning
         - liquidation
-        
+
     TradeBalanceReport:
       type: object
       properties:
         timestamp:
           type: string
           description: The time when trade balance was calculated.
-        total_balance_usdex:
+        total_balance:
           type: string
-          description: Total balance in usdex.
-        total_credit_usdex:
+          description: Total balance in usd.
+        total_credit:
           type: string
-          description: Total margin in usdex.
+          description: Total margin in usd.
         margin_level:
           type: string
           description: Current margin level.
@@ -889,7 +984,7 @@ components:
           description: The warning margin level at which notification message will be send.
         margin_level_liquidation:
           type: number
-          description: The liquidation margin level at which portfolio will be forcibly liquidated. 
+          description: The liquidation margin level at which portfolio will be forcibly liquidated.
         margin_status:
           $ref: '#/components/schemas/MarginStatus'
         credit_currencies:
@@ -903,19 +998,19 @@ components:
                 type: string
                 description: The credit given
           description: The list of currencies that has margin
-       
-      example: 
+
+      example:
         timestamp: '“2019-01-10T12:45:17.088Z”'
-        total_balance_usdex: '256.896'
-        total_credit_usdex: '126.32254'
+        total_balance_usd: '256.896'
+        total_credit_usd: '126.32254'
         margin_level: '2.033651318284132'
-        margin_level_warning: '0.15'  
+        margin_level_warning: '0.15'
         margin_level_liquidation: '0.1'
         margin_status: 'ok'
         credit_currencies:
           - currency: 'BTC'
             unit: '2.25'
-       
+
     NewWithdrawalRequest:
       type: object
       properties:
@@ -924,18 +1019,18 @@ components:
           example: 'BTC'
           description: A valid coin name.
         amount:
-          type: number
+          type: string
           description: Amount to withdraw
-          example: 0.25
+          example: '0.25'
         address:
           type: string
-          description: A valid block chain address.  
+          description: A valid block chain address.
           example: '1FfmbHfnpaZjKFvyi1okTjJJusN455paPH'
       required:
         - currency
         - amount
-        - address      
-              
+        - address
+
     WithdrawalsReport:
       type: object
       properties:
@@ -947,28 +1042,31 @@ components:
           description: Unique alpha numeric string that represent a transaction hash on the block chain.
         coin:
           type: string
-          description: name of a coin i.e. btc
+          description: Name of a coin i.g. btc.
         amount:
           type: string
           description: Amount of coins that were withdraw.
         fee:
           type: string
-          description: fees paid for the withdrawal.
+          description: Fees paid for the withdrawal.
         address:
           type: string
-          description: requested withdrawal address.
+          description: Requested withdrawal address.
         state:
-          type: string
-          description: status of the withdrawal request.
+          $ref: '#/components/schemas/WithdrawalState'
         created_at:
           type: string
-          description: Date of request creation. 
-      example: 
+          description: Date of request creation.
+        confirmations:
+          type: number
+          description: Number of block chain confirmations.
+      example:
         guid:   'f40d68a2-d155-455d-97b8-a856cb00d86c'
         txid:   'dfe3ca89e8ce658a6d527ef81d1ad1f4601dc6dc8a1856d9598cfc6d1c7e5f86'
         coin:   'eth'
         amount: '0.688'
         fee:    '0.002'
-        address: '16SCPYWidAKjARxeLjskihHJVzVLGoTzRw' 
-        state: 'rejected'
+        address: '16SCPYWidAKjARxeLjskihHJVzVLGoTzRw'
+        state: 'Rejected'
         created_at: '2019-01-10T16:24:17.852Z'
+        confirmations: 0
