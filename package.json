@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/etorox/docs#readme",
   "dependencies": {
-    "docsify-cli": "^4.3.0"
+    "docsify-cli": "^4.4.1"
   }
 }

@@ -12,7 +12,7 @@ Documentation on WebSocket integration available on the following pages:
 
 ## Instrument channels
 
-Instruments also known as markets or currency pairs: btcusdex, btceth and more...
+Instruments also known as markets or currency pairs: btcusd, btceth and more...
 
 The full list of instruments should be retrieved:
 * Any currency pair available from the exchange UI.
@@ -25,7 +25,7 @@ The event streams both public order & public trades related to the requested cha
 Example: Subscription request (Without signalR request format):
 ```json
 {
-    "channels":["btcusdex"],
+    "channels":["btcusd"],
     "event": "marketData"
 }
 ```
