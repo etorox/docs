@@ -25,7 +25,7 @@ Before starting the integration, you must create a token from the website UI, an
 }
 ```
 
-#### ** Pyhton **
+#### ** Python **
 
 soon!
 
@@ -54,7 +54,7 @@ soon!
 }
 ```
 
-#### ** Pyhton **
+#### ** Python **
 
 soon!
 
@@ -88,7 +88,7 @@ At this stage, a WebSocket connection has already been created. The user must id
 }
 ```
 
-#### ** Pyhton **
+#### ** Python **
 
 soon!
 
@@ -120,7 +120,7 @@ With the authentication parameters it's now very simple to setup the connections
 }
 ```
 
-#### ** Pyhton **
+#### ** Python **
 
 soon!
 
@@ -152,7 +152,7 @@ At this stage, a WebSocket connection has already been created and connection ha
 }
 ```
 
-#### ** Pyhton **
+#### ** Python **
 
 soon!
 
