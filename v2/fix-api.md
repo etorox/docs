@@ -31,9 +31,9 @@ Standard message FIX headers and trailers should be applied to messages:
 | 49  | SenderCompID    | Y        | String       | Assigned value used to identify firm sending message. Always unencrypted.                                                                                                            |
 | 56  | TargetCompID    | Y        | String       | Assigned value used to identify receiving firm. Always unencrypted.                                                                                                                  |
 | 34  | MsgSeqNum       | Y        | SeqNum       | Integer message sequence number.                                                                                                                                                     |
-| 43  | PossDupFlag     | N        | Boolean      | Indicates possible retransmission of message with this sequence number.<br>Required for retransmitted messages. Supported values:<br>‘Y’ (Possible duplicate)<br>'N' (Original transmission) |
-| 97  | PossResend      | N        | Boolean      | Indicates that message may contain information that has been sent under another sequence number. Supported values:<br>‘Y’ (Possible resend)<br>'N' (Original transmission)           |
-| 52  | SendingTime     | Y        | UTCTimestamp | Time of message transmission (expressed in UTC). YYYYMMDD-HH:MM:SS.sss                                                                                                               |
+| 43  | PossDupFlag     | N        | Boolean      | Indicates possible retransmission of message with this sequence number.<br>Required for retransmitted messages. Supported values:<br>`Y` (Possible duplicate)<br>`N` (Original transmission) |
+| 97  | PossResend      | N        | Boolean      | Indicates that message may contain information that has been sent under another sequence number. Supported values:<br>`Y` (Possible resend)<br>`N` (Original transmission)           |
+| 52  | SendingTime     | Y        | UTCTimestamp | Time of message transmission (expressed in UTC). `YYYYMMDD-HH:MM:SS.sss`                                                                                                             |
 | 122 | OrigSendingTime | N        | UTCTimestamp | Original time of message transmission when transmitting messages as the result of resend request (expressed in UTC). Required for message resent as a result of a resend request.    |
 
 <em>Standard Trailer:</em>
@@ -50,24 +50,24 @@ Standard message FIX headers and trailers should be applied to messages:
 
 | Tag | Field name      | Required | Type    | Comments                                                                                                                             |
 |-----|-----------------|----------|---------|--------------------------------------------------------------------------------------------------------------------------------------|
-| 98  | EncryptMethod   | Y        | int     | Method of encryption. Supported values: '0' — None                                                                                   |
+| 98  | EncryptMethod   | Y        | int     | Method of encryption. Supported values: `0` — None                                                                                   |
 | 108 | HeartBtInt      | Y        | int     | Heartbeat interval (seconds)                                                                                                         |
 | 141 | ResetSeqNumFlag | N        | Boolean | Indicates that the both sides of the FIX session should reset sequence numbers.                                                      |
-| 554 | Password        | Y        | String  | The password is a concatenation of the generated fields according to Authentication Password format: {signature}_{nonce}_{timestamp} |
+| 554 | Password        | Y        | String  | The password is a concatenation of the generated fields according to Authentication Password format: `{signature}_{nonce}_{timestamp}` |
 
 <em>Heartbeat (MsgType = ‘0’)</em>
 
 
 | Tag | Field name | Required | Type   | Comments                                                                                   |
 |-----|------------|----------|--------|--------------------------------------------------------------------------------------------|
-| 112 | TestReqID  | N        | String | Identifier included in Test Request (1) message to be returned in resulting Heartbeat (0). |
+| 112 | TestReqID  | N        | String | Identifier included in **Test Request (1)** message to be returned in resulting **Heartbeat (0)**. |
 
 
 <em>Test Request (MsgType = ‘1’)</em>
 
 | Tag | Field name | Required | Type   | Comments                                                                                   |
 |-----|------------|----------|--------|--------------------------------------------------------------------------------------------|
-| 112 | TestReqID  | Y        | String | Identifier included in Test Request (1) message to be returned in resulting Heartbeat (0). |
+| 112 | TestReqID  | Y        | String | Identifier included in **Test Request (1)** message to be returned in resulting **Heartbeat (0)**. |
 
 
 <em>Resend Request (MsgType = ‘2’)</em>
@@ -75,16 +75,16 @@ Standard message FIX headers and trailers should be applied to messages:
 | Tag | Field name | Required | Type   | Comments |
 |-----|------------|----------|--------|--------- |
 | 7   | BeginSeqNo | Y        | SeqNum | Message sequence number of first message in range to be resent.  |
-| 16  | EndSeqNo   | Y        | SeqNum | Message sequence number of last message in range to be resent.<br>If request is for a single message BeginSeqNo (7) = EndSeqNo (16).<br>If request is for all messages subsequent to a particular message, EndSeqNo (16) = '0' (representing infinity). |
+| 16  | EndSeqNo   | Y        | SeqNum | Message sequence number of last message in range to be resent.<br>If request is for a single message **BeginSeqNo (7)** = **EndSeqNo (16)**.<br>If request is for all messages subsequent to a particular message, **EndSeqNo (16)** = `0` (representing infinity). |
 
 
 <em>Session Level Reject (MsgType = ‘3’)</em>
 
 | Tag | Field name          | Required | Type       | Comments |
 |-----|---------------------|----------|------------|----------|
-| 45  | RefSeqNum           | Y        | SeqNum     | MsgSeqNum (34) of rejected message.  |
+| 45  | RefSeqNum           | Y        | SeqNum     | **MsgSeqNum (34)** of rejected message.  |
 | 371 | RefTagID            | N        | int        | The tag number of the FIX field being referenced. |
-| 372 | RefMsgType          | N        | String(10) | The MsgType (35) of the FIX message being referenced.  |
+| 372 | RefMsgType          | N        | String(10) | **The MsgType (35)** of the FIX message being referenced.  |
 | 373 | SessionRejectReason | N        | int        | Code to identify reason for reject. See supported values in a table below. |
 | 58  | Text                | N        | String     | Message to explain reason for rejection. |
 
@@ -114,7 +114,7 @@ Standard message FIX headers and trailers should be applied to messages:
 
 | Tag | Field name  | Required | Type    | Comments |
 |-----|-------------|----------|---------|----------|
-| 123 | GapFillFlag | N        | Boolean | Indicates that the Sequence Reset (4) message is replacing administrative or application messages which will not be resent. Supported values:<br>‘Y' (Gap Fill message, MsgSeqNum field valid)<br>'N' (Sequence Reset, ignore MsgSeqNum) |
+| 123 | GapFillFlag | N        | Boolean | Indicates that the **Sequence Reset (4)** message is replacing administrative or application messages which will not be resent. Supported values:<br>`Y` (Gap Fill message, **MsgSeqNum** field valid)<br>`N` (Sequence Reset, ignore **MsgSeqNum**) |
 | 36  | NewSeqNo    | Y        | SeqNum  | New sequence number  |
 
 
@@ -134,11 +134,11 @@ Standard message FIX headers and trailers should be applied to messages:
 
 | Tag   | Field name              | Required | Type       | Comments                                                                                                                                    |
 |-------|-------------------------|----------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| 262   | MDReqID                 | Y        | String     | Unique identifier for Market Data Request (V) String length 1-20                                                                            |
-| 263   | SubscriptionRequestType | Y        | char       | Subscription Request Type Supported values:<br>1 = Snapshot + Updates (Subscribe)<br>2 = Disable previous Snapshot + Update Request (Unsubscribe) |
-| 264   | MarketDepth             | Y        | int        | Depth of market for Book Snapshot Supported values:<br>0 - Full Book (up to 20 price levels)<br>1 - Top of book                             |
-| 267   | NoMDEntryTypes          | Y        | NumInGroup | Number of MDEntryType (269) fields requested                                                                                                |
-| =>269 | MDEntryType             | Y        | char       | Type Market Data entry. Supported values:<br>0 – Bid<br>1 – Offer<br>2 – Trade                                                              |
+| 262   | MDReqID                 | Y        | String     | Unique identifier for **Market Data Request (V)** String length 1-20                                                                            |
+| 263   | SubscriptionRequestType | Y        | char       | Subscription Request Type Supported values:<br>`1` = Snapshot + Updates (Subscribe)<br>`2` = Disable previous Snapshot + Update Request (Unsubscribe) |
+| 264   | MarketDepth             | Y        | int        | Depth of market for Book Snapshot Supported values:<br>`0` - Full Book (up to 20 price levels)<br>`1` - Top of book                             |
+| 267   | NoMDEntryTypes          | Y        | NumInGroup | Number of **MDEntryType (269)** fields requested                                                                                                |
+| =>269 | MDEntryType             | Y        | char       | Type Market Data entry. Supported values:<br>`0` – Bid<br>`1` – Offer<br>`2` – Trade                                                        |
 | 146   | NoRelatedSym            | Y        | NumInGroup | Number of symbols (instruments) requested. Valid Values: 1                                                                                  |
 | =>55  | Symbol                  | Y        | String     | Ticker symbol Supported values only single of: All symbols supported by eToroX in format like BTC/ETH                                       |
 
@@ -146,10 +146,10 @@ Standard message FIX headers and trailers should be applied to messages:
 
 | Tag   | Field name  | Required | Type       | Comments                                                                                |
 |-------|-------------|----------|------------|-----------------------------------------------------------------------------------------|
-| 262   | MDReqID     | Y        | String     | Unique identifier for Market Data Request (V) this message is sent in reply to          |
+| 262   | MDReqID     | Y        | String     | Unique identifier for **Market Data Request (V)** this message is sent in reply t       |
 | 55    | Symbol      | Y        | String     | Ticker symbol. Supported values: All symbols supported by eToroX in format like BTC/ETH |
 | 268   | NoMDEntries | Y        | NumInGroup | Number of entries following.                                                            |
-| =>269 | MDEntryType | Y        | char       | Type of Market Data entry. Valid values:<br>0 – Bid<br>1 – Offer                        |
+| =>269 | MDEntryType | Y        | char       | Type of Market Data entry. Valid values:<br>`0` – Bid<br>`1` – Offer                    |
 | =>270 | MDEntryPx   | Y        | Price      | Price of the Market Data Entry.                                                         |
 | =>271 | MDEntrySize | Y        | Qty        | Quantity or volume represented by the Market Data Entry.                                |
 
@@ -157,20 +157,21 @@ Standard message FIX headers and trailers should be applied to messages:
 
 | Tag   | Field name     | Required | Type       | Comments                                                                                |
 |-------|----------------|----------|------------|-----------------------------------------------------------------------------------------|
-| 262   | MDReqID        | Y        | String     | Unique identifier for Market Data Request (V) this message is sent in reply to          |
+| 262   | MDReqID        | Y        | String     | Unique identifier for **Market Data Request (V)** this message is sent in reply to          |
 | 268   | NoMDEntries    | Y        | NumInGroup | Number of entries following.                                                            |
-| =>279 | MDUpdateAction | Y        | char       | Type of Market Data update action. Valid values:<br>0 – New<br>1 - Change<br>2 - Delete |
-| =>269 | MDEntryType    | Y        | char       | Type of Market Data entry. Valid values:<br>0 - Bid<br>1 - Offer<br>2 – Trade           |
+| =>279 | MDUpdateAction | Y        | char       | Type of Market Data update action. Valid values:<br>`0` – New<br>`1` - Change<br>`2` - Delete |
+| =>269 | MDEntryType    | Y        | char       | Type of Market Data entry. Valid values:<br>`0` - Bid<br>`1` - Offer<br>`2` – Trade           |
 | =>55  | Symbol         | Y        | String     | Ticker symbol. Supported values: All symbols supported by eToroX in format like BTC/ETH |
 | =>270 | MDEntryPx      | Y        | Price      | Price of the Market Data Entry.                                                         |
 | =>271 | MDEntrySize    | Y        | Qty        | Quantity or volume represented by the Market Data Entry.                                |
+| =>273 | MDEntryTime    | Y        | UTCTimeOnly| Time of Market Data Entry.                                                              |
 
 <em>Market Data Request Reject (MsgType = ‘Y’)</em>
 
 | Tag | Field name     | Required | Type   | Comments                                                                                 |
 |-----|----------------|----------|--------|------------------------------------------------------------------------------------------|
-| 262 | MDReqID        | Y        | String | Must refer to the MDReqID (262) of the request.                                          |
-| 281 | MDReqRejReason | Y*       | char   | Reason for the rejection of a Market Data Request (V). See supported values in a table below. |
+| 262 | MDReqID        | Y        | String | Must refer to the **MDReqID (262)** of the request.                                          |
+| 281 | MDReqRejReason | Y*       | char   | Reason for the rejection of a **Market Data Request (V)**. See supported values in a table below. |
 | 58  | Text           | N        | String | Extra explanations on rejection reason                                                   |
 
 <em> MDReqRejReason values:</em>
@@ -178,10 +179,10 @@ Standard message FIX headers and trailers should be applied to messages:
 | Code | Reason |
 | ---- | ------ |
 | '0' | Unknown symbol |
-| '1' | Duplicate MDReqID (262) |
-| '4' | Unsupported SubscriptionRequestType (263) |
-| '5' | Unsupported MarketDepth (264) |
-| '8' | Unsupported MDEntryType (269) |
+| '1' | Duplicate **MDReqID (262)** |
+| '4' | Unsupported **SubscriptionRequestType (263)** |
+| '5' | Unsupported **MarketDepth (264)** |
+| '8' | Unsupported **MDEntryType (269)** |
 
 <br>
 
@@ -193,22 +194,25 @@ Standard message FIX headers and trailers should be applied to messages:
 |-----|--------------|----------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | 11  | ClOrdID      | Y        | String       | Unique identifier of the order as assigned by the client                                                                                            |
 | 55  | Symbol       | Y        | String       | Ticker symbol. Valid values: All symbols supported by eToroX                                                                                        |
-| 54  | Side         | Y        | char         | Side of order. Valid values:<br>'1' - Buy<br>'2' - Sell                                                                                             |
+| 54  | Side         | Y        | char         | Side of order. Valid values:<br>`1` - Buy<br>`2` - Sell                                                                                             |
 | 60  | TransactTime | Y        | UTCTimestamp | Time of order creation.                                                                                                                             |
 | 38  | OrderQty     | Y        | Qty          | Quantity ordered                                                                                                                                    |
-| 40  | OrdType      | Y        | char         | Order type. Valid values:<br>'1' - Market<br>'2' - Limit                                                                                            |
-| 44  | Price        | C        | Price        | Price of the limit order. Required for OrderType(40) = ‘2’ (Limit)                                                                                  |
-| 59  | TimeInForce  | Y        | char         | Specifies how long the order remains in effect. Valid values:<br>'1' - Good Till Cancel (GTC)<br>'3' - Immediate Or Cancel (IOC)<br>'6' - Good Till Date (GTD) |
-| 126 | ExpireTime   | C        | UTCTimestamp | Conditionally required if TimeInForce <59> = GTD                                                                                                    |
+| 40  | OrdType      | Y        | char         | Order type. Valid values:<br>`1` - Market<br>`2` - Limit                                                                                            |
+| 44  | Price        | C        | Price        | Price of the limit order. Required for **OrderType(40)** = `2` (Limit)                                                                              |
+| 59  | TimeInForce  | Y        | char         | Specifies how long the order remains in effect. Valid values:<br>`1` - Good Till Cancel (GTC)<br>`3` - Immediate Or Cancel (IOC)<br>`6` - Good Till Date (GTD) |
+| 126 | ExpireTime   | C        | UTCTimestamp | Conditionally required if **TimeInForce <59>** = `GTD`                                                                                              |
+| 1138 | DisplayQty  | Y        | Qty          | The quantity to be displayed.                                                                                                                       |
+| 99  | StopPx       | C        | Price        | Conditionally required if **OrdType** is `Limit` or `Stop Limit`                                                                                    |
 
 <em>Order Cancel Request (MsgType = ‘F’)</em>
 
 | Tag | Field name   | Required | Type         | Comments                                                                                          |
 |-----|--------------|----------|--------------|---------------------------------------------------------------------------------------------------|
-| 41  | OrigClOrdID  | Y        | String       | ClOrdID (11) of the previous non-rejected order when canceling an order. Used for reference only. |
+| 41  | OrigClOrdID  | Y        | String       | **ClOrdID (11)** of the previous non-rejected order when canceling an order. Used for reference only. |
 | 11  | ClOrdID      | Y        | String       | Unique ID of cancel request as assigned by the client                                             |
 | 60  | TransactTime | Y        | UTCTimestamp | Time of order creation                                                                            |
 | 54  | Side         | Y        | Char         | Side of order                                                                                     |
+| 55  | Symbol       | Y        | String       | Ticker symbol. Valid values: All symbols supported by eToroX in format like BTC/ETH               |
 
 <em>Order Cancel Reject (MsgType = ‘9’)</em>
 
@@ -216,11 +220,11 @@ Standard message FIX headers and trailers should be applied to messages:
 |-----|------------------|----------|--------------|--------------------------------------------------------------------------------------------------------------------------------|
 | 37  | OrderID          | Y        | String       | Unique identifier of the order in eToroX Trading System.                                                                       |
 | 11  | ClOrdID          | Y        | String       | Unique ID of cancel request as assigned by the client                                                                          |
-| 41  | OrigClOrdID      | Y        | String       | ClOrdID (11) of the previous non-rejected order when canceling an order.                                                       |
+| 41  | OrigClOrdID      | Y        | String       | **ClOrdID (11)** of the previous non-rejected order when canceling an order.                                                   |
 | 39  | OrdStatus        | Y        | char         | Identifies current status of order.                                                                                            |
-| 434 | CxlRejResponseTo | Y        | char         | Identifies the type of request that an Order Cancel Reject (9) is in response to. Valid values: '1' - Order Cancel Request (F) |
+| 434 | CxlRejResponseTo | Y        | char         | Identifies the type of request that an **Order Cancel Reject (9)** is in response to. Valid values: `1` - Order Cancel Request (F) |
 | 60  | TransactTime     | N        | UTCTimestamp | Time of order creation.                                                                                                        |
-| 102 | CxlRejReason     | N        | int          | Code to identify reason for cancel rejection. Valid values:<br>'1' - Unknown order<br>'99' - Other                                   |
+| 102 | CxlRejReason     | N        | int          | Code to identify reason for cancel rejection. Valid values:<br>`1` - Unknown order<br>`99` - Other                             |
 | 58  | Text             | N        | String       | Free format text string – the reason for the reject.                                                                           |
 
 <em>Execution Report (MsgType = ‘8’)</em>
@@ -229,31 +233,35 @@ Standard message FIX headers and trailers should be applied to messages:
 |-----|--------------|----------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | 11  | ClOrdID      | Y        | String       | Unique identifier of the order or cancel request, this Execution Report relates to, as assigned by the client                              |
 | 37  | OrderID      | Y        | String       | Unique identifier of the order assigned by eToroX Trading System.                                                                          |
-| 41  | OrigClOrdID  | C        | String       | ClOrdID (11) of the cancelled order. Conditionally required for response to Cancel request (ExecType (150) = Canceled).                    |
-| 17  | ExecID       | Y        | String       | Unique identifier of Execution Report (8) message as assigned by eToroX                                                                    |
-| 150 | ExecType     | Y        | char         | Describes the specific Execution Report (8) type. Valid values:<br>'0' - New<br>'4' - Canceled<br>'8' - Rejected<br>'F' - Trade (partial fill or fill) |
-| 39  | OrdStatus    | Y        | char         | Identifies current status of order. Valid values:<br>'0' - New<br>'1' - Partially filled<br>'2' - Filled<br>'4' - Canceled<br>'8' - Rejected              |
+| 41  | OrigClOrdID  | C        | String       | **ClOrdID (11)** of the cancelled order. Conditionally required for response to Cancel request (**ExecType (150)** = `Canceled`).          |
+| 17  | ExecID       | Y        | String       | Unique identifier of **Execution Report (8)** message as assigned by eToroX                                                                |
+| 150 | ExecType     | Y        | char         | Describes the specific **Execution Report (8)** type. Valid values:<br>`0` - New<br>`4` - Canceled<br>`8` - Rejected<br>`F` - Trade (partial fill or fill) |
+| 39  | OrdStatus    | Y        | char         | Identifies current status of order. Valid values:<br>`0` - New<br>`1` - Partially filled<br>`2` - Filled<br>`4` - Canceled<br>`8` - Rejected|
 | 55  | Symbol       | Y        | String       | Ticker symbol Supported values: All symbols supported by eToroX in format like BTC/ETH                                                     |
-| 54  | Side         | Y        | char         | Side of order. Valid values:<br>'1' - Buy<br>'2' - Sell                                                                                          |
-| 40  | OrdType      | N        | char         | Order type. Valid values:<br>'1' - Market<br>'2' - Limit                                                                                         |
+| 54  | Side         | Y        | char         | Side of order. Valid values:<br>`1` - Buy<br>`2` - Sell                                                                                    |
+| 40  | OrdType      | N        | char         | Order type. Valid values:<br>`1` - Market<br>`2` - Limit                                                                                   |
 | 44  | Price        | C        | Price        | Echoed back from NOS (Limit only)                                                                                                          |
-| 32  | LastQty      | С        | Qty          | Quantity bought/sold on this fill. Required if ExecType (150) = ‘F’ (Trade). LastQty not required when ExecType=Order Status               |
-| 31  | LastPx       | С        | Price        | Price of this fill. Required if ExecType (150) = ‘F’ (Trade).                                                                              |
-| 151 | LeavesQty    | Y        | Qty          | Quantity open for further execution. Always 0 for ExecType=’8’ (Rejected).                                                                 |
-| 14  | CumQty       | Y        | Qty          | Currently quantity for the order. Always 0 for ExecType=’8’ (Rejected).                                                                    |
+| 32  | LastQty      | С        | Qty          | Quantity bought/sold on this fill. Required if **ExecType (150)** = `F` (Trade). LastQty not required when **ExecType** = `Order Status`   |
+| 31  | LastPx       | С        | Price        | Price of this fill. Required if **ExecType (150)** = `F` (Trade).                                                                          |
+| 151 | LeavesQty    | Y        | Qty          | Quantity open for further execution. Always 0 for **ExecType** = `8` (Rejected).                                                           |
+| 14  | CumQty       | Y        | Qty          | Currently quantity for the order. Always 0 for **ExecType** = `8` (Rejected).                                                              |
 | 6   | AvgPx        | Y        | Price        | Average of all fills for this order (0 if New)                                                                                             |
 | 60  | TransactTime | N        | UTCTimestamp | Time of order creation.                                                                                                                    |
 | 58  | Text         | N        | String       | Free text for example rejection reason                                                                                                     |
+| 99  | StopPx       | C        | Price        | Conditionally required if **OrdType** is `Limit` or `Stop Limit`                                                                           |
+| 1138 | DisplayQty  | Y        | Qty          | The quantity to be displayed.                                                                                                              |
 
 <em>Business Message Reject (MsgType = ‘j’)</em>
 
-| Tag | Field name           | Required | Type   | Comments                                                                                                                                                                                                                                                            |
-|-----|----------------------|----------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 45  | RefSeqNum            | N        | SeqNum | Reference message sequence number                                                                                                                                                                                                                                   |
-| 372 | RefMsgType           | Y        | String | The MsgType (35) of the FIX message being referenced.                                                                                                                                                                                                               |
-| 379 | BusinessRejectRefID  | N        | String | The value of the business-level "ID" field on the message being referenced.                                                                                                                                                                                         |
-| 380 | BusinessRejectReason | Y        | int    | Code to identify reason for a Business Message Reject (j) message. See supported values in a table below. |
-| 58  | Text                 | N        | String | Free format text string – the reason for the reject.                                                                                                                                                                                                                |
+Specify use cases for this message and flow  
+
+| Tag | Field name           | Required | Type   | Comments                                                                                                  |
+|-----|----------------------|----------|--------|---------------------------------------------------------------------------------------------------------- |
+| 45  | RefSeqNum            | N        | SeqNum | Reference message sequence number                                                                         |
+| 372 | RefMsgType           | Y        | String | The **MsgType (35)** of the FIX message being referenced.                                                     |
+| 379 | BusinessRejectRefID  | N        | String | The value of the business-level "ID" field on the message being referenced.                               |
+| 380 | BusinessRejectReason | Y        | int    | Code to identify reason for a **Business Message Reject (j)** message. See supported values in a table below. |
+| 58  | Text                 | N        | String | Free format text string – the reason for the reject.                                                      |
 
 <em>BusinessRejectReason values:</em>
 
@@ -273,8 +281,9 @@ Sent by the client to obtain information about pending and done orders.<br>The r
 
 | Tag | Field name | Required | Type   | Comments                                                                                    |
 |-----|------------|----------|--------|---------------------------------------------------------------------------------------------|
-| 11  | ClOrdID    | Y        | String | ClOrdID of order requested. When supplying this value, you do not need to supply an OrderID |
+| 11  | ClOrdID    | Y        | String | **ClOrdID** of order requested. When supplying this value, you do not need to supply an OrderID |
 | 54  | Side       | Y        | Char   | Side of order                                                                               |
+| 55  | Symbol     | Y        | String | Ticker symbol. Valid values: All symbols supported by eToroX in format like BTC/ETH         |
 
 <br>
 
