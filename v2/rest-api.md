@@ -281,21 +281,9 @@ None
 ```json
 [
   {
-      "id": "audx",
-      "name": "eToro Australian Dollar",
-      "unifiedCryptoassetId": "",
-      "symbol": "$",
-      "type": "coin",
-      "iconUrl": "icons/currencies/audx_ecb95b1451f8ca56.png",
-      "baseFactor": 1000000000000000000,
-      "precision": 2,
-      "transactionUrlTemplate": "https://etherscan.io/tx/#{txid}"
-  },
-  {
       "id": "bch",
       "name": "Bitcoin Cash",
-      "unifiedCryptoassetId": "1831",
-      "symbol": "฿",
+      "unifiedCryptoassetId": 1831,
       "type": "coin",
       "iconUrl": "icons/currencies/bch_5578e57fc42fcc06.png",
       "baseFactor": 100000000,
@@ -305,8 +293,7 @@ None
   {
       "id": "bnb",
       "name": "Binance Coin",
-      "unifiedCryptoassetId": "1839",
-      "symbol": "b",
+      "unifiedCryptoassetId": 1839,
       "type": "coin",
       "iconUrl": "icons/currencies/bnb_a11a7d8eab82d907.png",
       "baseFactor": 100000000,
@@ -316,8 +303,7 @@ None
   {
       "id": "btc",
       "name": "Bitcoin",
-      "unifiedCryptoassetId": "1",
-      "symbol": "฿",
+      "unifiedCryptoassetId": 1,
       "type": "coin",
       "iconUrl": "icons/currencies/btc_8d46a67241b91050.png",
       "baseFactor": 100000000,
@@ -327,8 +313,7 @@ None
   {
       "id": "dash",
       "name": "Dash",
-      "unifiedCryptoassetId": "131",
-      "symbol": "Đ",
+      "unifiedCryptoassetId": 131,
       "type": "coin",
       "iconUrl": "icons/currencies/dash_5eade54246c64e8a.png",
       "baseFactor": 100000000,
@@ -338,8 +323,7 @@ None
   {
       "id": "etc",
       "name": "Ethereum Classic",
-      "unifiedCryptoassetId": "1321",
-      "symbol": "e",
+      "unifiedCryptoassetId": 1321,
       "type": "coin",
       "iconUrl": "icons/currencies/etc_dbcd63476bcdc94d.png",
       "baseFactor": 1000000000000000000,
@@ -349,8 +333,7 @@ None
   {
       "id": "zec",
       "name": "Zcash ",
-      "unifiedCryptoassetId": "1437",
-      "symbol": null,
+      "unifiedCryptoassetId": 1437,
       "type": "coin",
       "iconUrl": "icons/currencies/zec_921ce185c51d5023.png",
       "baseFactor": 100000000,
@@ -1079,11 +1062,11 @@ None
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | lastUpdatedAt | Number | The timestamp of the last portfolio update (milliseconds since the Unix epoch). |
-| totalUsdBalance | String | Total balance, converted to USD. |
-| totalUsdCredit | String | Total credit, converted to USD. |
-| marginLevel | String | Current margin level calculated by:<br>`totalUsdBalance` / `totalUsdBalance` + `totalUsdCredit`. |
-| marginCallUsdBalance | String | The `totalUsdBalance` at which a margin call will be triggered. |
-| liquidationUsdBalance | String | The `totalUsdBalance` at which eToroX will begin to automatically close open positions. |
+| totalUsdBalance | String | Total balance, converted to USD. **Optional. For credited customers** |
+| totalUsdCredit | String | Total credit, converted to USD. **Optional. For credited customers** |
+| marginLevel | String | Current margin level calculated by:<br>`totalUsdBalance` / `totalUsdBalance` + `totalUsdCredit`. **Optional. For credited customers**|
+| marginCallUsdBalance | String | The `totalUsdBalance` at which a margin call will be triggered. **Optional. For credited customers**|
+| liquidationUsdBalance | String | The `totalUsdBalance` at which eToroX will begin to automatically close open positions. **Optional. For credited customers**|
 | currency | Array | An array describing the user’s portfolio status for each currency.<br>Each entry contains the attributes described in the next table. |
 
 <br>
