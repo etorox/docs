@@ -102,15 +102,6 @@ At eToroX we value the security of our clients very highly.<br>At each authentic
 
 <br>
 
-### Authenticated end-points
-
-eToroX currently provides two communications modes, both  with different interfaces, but sharing the same authentication processes and properties.
-
-Authenticated end-points:
-* [HTTPS authentication](https-api)
-* [Websockets authentication](websockets-api)
-
-
 <br>
 
 ### Access to eToroX API
@@ -131,7 +122,8 @@ Every `developer app` provides the following information:
 When tokens are generated, the following information becomes accessible:
 * API key - A UUID id of this token.
 * Private Key - A private key used for signing.
-*Important! This information cannot be retrieved and must be stored by the user*
+
+> Important! This information cannot be retrieved and must be stored by the user
 
 <br>
 
