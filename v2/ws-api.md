@@ -12,610 +12,321 @@
 ## WebSockets API
 <hr>
 
-eToroX WebSocket streaming servers offer real-time market data updates and user specific data. WebSockets is a bi-directional protocol offering fastest real-time data, helping users to build real-time applications.
+eToroX WebSocket streaming servers offer real-time market data updates using server push notificationsnto the clients.
 
 <br>
 
-> eToroX provides streaming services via WebSockets only to authenticated users.
 
 <br>
 
 ### General
 
-* The base endpoint is provided by the UI website when creating a developer app.
+* WebSocket endpoint will be exposed with DNS ws.etorox.com
 * All WebSocket messages are JSON formatted messages separated by a special space-like character \`\` (`0x1e`).
-* eToroX will close WebSockets that are opened for more than 24 hours. It is highly recommended to perform a gradual recycle of new WebSockets connections prior to hard disconnection by the eToroX server.
 
 <br>
 
-### Ping
+### Subscription
 
-Both eToroX and the client want to determine whether the connection is alive.
+Two kind of updates are available 
 
-> This `ping` is an application layer ping, which is in addition to the Websocket protocol ping initiated by the server.
+<em>Snapshot updates</en>
 
-User must send a `ping` frame every ~15 seconds. If no valid `ping` is received for more than 30 seconds, client connections are terminated. If the eToroX server does not respond with a valid `ping` result, the client should assume that the eToroX server is not accessible.
+Snapshot updates are either full or incremental
 
-> When using [SignalR](websocket-client-signalr) it's transparently managed by the SignalR client.
+* Trades
+* Orderbook
 
-<br>
 
-### Server side connection hangups
+<em>Market Data updates</en>
 
-The eToroX server will terminate client connections in any of the following scenarios:
-
-* The client didn't perform the `setup` action properly.
-* The client didn't perform the http handshake in time.
-* After completing the http handshake, the client didn't immediately complete `setup`.
-* The client did not ping the server within a reasonable timeframe.
+* Execution Report
+* Trade Capture Report
 
 <br>
 
-### WebSocket protocol
+### Authentication
 
-Any WebSocket compliant (`rfc6455`) client should be able to connect to eToroX streaming services.
-Currently users can choose one of the following clients for integration:
+Authentication of websockets is required only for Market Data Updates. Snapshot updates are public and available to all users.  
+Authentication process is similar to Rest API Authentication process.
 
-* [SignalR](signal-r) (Cross platform ASP.NET Core SignalR) - The easiest approach, where SignalR handles most parts of the transport protocol for the user, leaving them only to handle actions required by eToroX.
-* Websocket - The user needs to handle all transport protocol actions in addition to actions required by eToroX, only choose this approch if you know what you are doing and understand the SignalR message formatting, the SignalR client approch is the most recommended and documented.
 
-> eToroX currently only provides documentation for integration with the SignalR client.
+#### API tokens
 
-<br>
+> Requests for developer apps are currently individually reviewed by Customer Support, and manually approved.
 
-### Terminology
+`API tokens` are generated based on the `developer app`. Users can manage multiple `API tokens`, by identifying each `API token` with a customized token name.
+When tokens are generated, the following information becomes accessible:
+* API key - A UUID id of this token.
+* Private Key - A private key used for signing.
 
-| Phrase | Meaning |
-| ------ | ------- |
-| WebSocket protocol | The prefefined procedural methods of creating and maintaining a Websocket connection to eToroX servers, including frames and json formats defined by SignalR.|
-| Channel | A logical subject / source of information (described in the section [eToroX WebSockets channels](websockets-channels) ). |
-| Event | A channel may stream multiple occurrences that have happened on that specific channel. |
-| Topic | A combination of a single channel and a single event. |
-| Result | A single result or multiple results from the same invocation. |
-| Action | A method or a frame that should be sent by the user in order to achieve a result. |
-| Stream | An action that results in real time, multiple, on-going results. |
-| Subscription | A request for a stream of information, where the stream is a technical term for the information passed. The subscription is the logical term that defines the streams. |
+> Important! This information cannot be retrieved and must be stored by the user
 
-<br>
+#### Authentication process
 
-### eToroX actions / streams
+The authentication process requires the following parameters:
+* API key - A UUID identifies this token
+* Private key - An asymmetric RSA private key that should never be shared
+* Timestamp - Number of milliseconds since epoch of the moment the signature was created (example: 1567334955567)
+* Nonce - A UUID
 
-eToroX streaming services are only permitted for identified users. The setup action is performed to "prove" to eToroX that the user of the WebSocket is an identified user, and that it has access to their own private key.
+eToroX servers verifies user identity based on the following:
 
-> Do not share your private keys! eToroX will never ask you to share or send your private keys.
+* API key
+* Signature For details about creating a signature, see the following section
+* Nonce
+* Timestamp
 
-For more details about the authentication process, see the section [eToroX authentication](authentication).
+#### Create a signature
+Asymmetric signatures are generated by the user to “prove” to the eToroX server that the user has access to their own private keys. eToroX then confirms this by running a similar but asymmetric process with the public key equivalence.
+The following parameters are used for signature generation:
+* API key
+* Private key
+* Nonce
+* Milliseconds since epoch
 
-The `setup` action receives the following mandatory parameters as a single json formatted key/value object:
+##### Private key
+The private keys generated by eToroX are:
+* `PKCS8` encoded.
+* `PEM` formatted.
+* Cipher `AES-256-CBC`
+* Empty string as the passphrase `` .
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| `apiKey` | string | The token api key. |
-| `nonce` | string | A unique UUID that was used when generating the signature. |
-| `timestamp` | int | Milliseconds since epoch used when generating the signature.|
-| `signature` | string | The result of the signature process (described in the section [eToroX authentication](authentication) ). |
+*Some libraries may require the user to convert the private key into different encoding. This can be done by using the `openssl` command line tool.*
 
-#### Stream - `subscribe`
+##### Signing process
 
-A single websocket connection can maintain multiple streams of different channels and events.
-
-The `subscribe` action adds an additional stream of data of the requested channels and event to the current websocket session.
-
-> Clients may invoke the `subscribe` action as many times as they wish as long as the action passes the required validations.
-
-The `subscribe` action receives the following mandatory fields as a json formatted key/value object:
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| `channels` | string[] | The list of channels to be added to the requested stream (described in the section [eToroX WebSockets channels](websockets-channels) ). |
-| `event` | string | The name of the event to be selected from all channels to be added to the requested stream. |
-
-The following subscription request (without SignalR request format):
-
-```json
-{
-	"channels": ["btcusd"],
-	"event": "marketData"
-}
+The payload the user signs is a concatenation of the `nonce` and `milliseconds since epoch`.
+```js
+const payload = `${nonce}${timestamp}`;
 ```
 
-Produces events like the following event (without SignalR response format):
-
-```json
-{  
-	"origin_volume": 1.2,
-	"price": 1.43,
-	"id": "0222057e-8fa4-4e3b-8bd3-8c95622dc4f5",  
-	"volume": 1.2,  
-	"delta": -1.2,  
-	"market": "btcusd",  
-	"name": "order_canceled",  
-	"side": "bid",  
-	"state": "cancelled",  
-	"update_at": "2020-07-28T13:44:53.798Z",  
-	"snapshot_id": "234989823423"  
-}
-```
-
-##### `subscribe` validations
-
-* Multiple client subscriptions cannot be subscribed to the same topic (channel/event combination). Should the same topic be requested more than once, the `subscribe` request will fail.
-* Each client subscription request should be from a list of channels and their events. If a topic is requested that is not listed by eToroX, or is not active, the `subscribe` request will fail.
-* If the optional `fields` selector is sent than it must be ordered in alphanumerically.
-
-#### Stream `fields` selector
-
-In addition to the SignalR formatted frames, eToroX servers returns a key/value json formatted object with all `fields` and data for each event. While being very comfortable it significantly increases bandwidth. It is highly recommended to activate a fields selector when creating the desired stream. As a result the client will receive the list of requested values without the schema, and will be able to determine which of the values defines which property according to the requested order.
-
-The `subscribe` action receives the following mandatory and optional fields selector fields as a json formatted key/value object:
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| `channels` | string[] | The list of channels to be added to the requested stream. |
-| `event` | string | The name of the event to be selected from all channels to be added to the requested stream. |
-| `fields` | string[] | The list of fields to select from the event data. |
-
-The following subscription request (without SignalR request format):
-
-```json
-{
-	"channels": ["btcusd"],
-	"event": "marketData",
-	"fields": ["name" , "price" , "volume"]
-}
-```
-
-Produces events like the following events (without SignalR request format):
-
-```json
-[ "order_created" , 1.2 , 0.5 ]
-```
-
-> The order of the values is arranged in the same order as the requested fields in the subscription request.
-
-<br>
-
-### Websocket client SignalR
-
-SignalR client is the fastest way to integrate with eToroX streaming services.
-
-#### Step 1 - Preliminaries
-
-Before starting the integration, you must create a token from the website UI, and use both `apiKey` and `privateKey`.
-
-<em>Node.JS</em>
+The payload should be signed with a `SHA256` signature algorithm and result should be `base64` encoded.
 
 ```js
-const webSocketsHost = 'sdf92342s....etorox.com';
-const apiKey = '825805c3-45d6-4fab-9b05-0844395ff3ef';
-const privateKey = `-----BEGIN ENCRYPTED PRIVATE KEY-----
-MIIC3TBXBgkqhkiG9w0BBQ0wSjApBgkqhkiG9w0BBQwwHAQIgiEmpW3i8ccCAggA
-MAwGCCqGSIb3DQIJBQAwHQYJYIZIAWUDBAEqBBDtIerHEx69L1zC6FG3UDJ6BIIC
-gJ/cU/utsW6FuQ3QFvQjOLyeErn18p8Jer/v1ejLEuZ741h3Tt79MjlvHkAfL+4r
-mUQbO+MotpzoehI7oKfdSvC8Vi6x6R9QRmr4PLtUaUZrbM82ZwvWpaVqoSRAnL+r
-Xvsyy7bNRyCjbPmMd+x3c111Q3ZVJro+3p89n/x3R987vM+J7+wabgRhntlSMB1p
-I+cbesfJaQPbZ+qYAreef2Tzy4gk0NJOwNhjWjvICBsaZI8sxNwDmA3sZ01nkh9g
-GC8yBIgJsPaMoix7wvTScd+5YFXlNO5EWWndeD6eNt1c2ui7UdmvOhGND+s9I2b/
-G6I1agW7vyd3M6MO4BBDqHk0BxQ20J4ORRuBvGFPfHScMCbAdd2SrKxD0GZd6F/n
-J9hyBF3NEsL8U8uXZ/XHUHzALbYHCPpdlEVHwPatdHmw5g/iZDO2xaeNxDvBKhxN
-/d7P1O3By2QVowkO4Carv7er0U9gEiYPpP8QNSEEbgAcKue+weU+atbEeKf9lNIz
-dsik1kHZWRlLYq4IxnNxXvMsXhrVZT019uJvY5kfaeHatHpCoSdhXqXJ2F6nHUc/
-4FsoKGVvA5wB248slueZgJX/khPPbYAWANbK9R5WzJefr+RUrhieCoNksvHm0Bew
-EFz8H5AzW197eRtVtSvFGAS+3rhV/vG9WBtoOR0FgmkN9xpzJnb9j6Svwf9NKlds
-pK7f+JVmZy6NaEBJvGQAvLWHc9Jc0PxvmIgc3vaPxl+l+AITS7kN3EORyDrdvJ9q
-8hP6slgnVaHcgEJSUhSyD+yustfNUfH7Fg3rUM2nvkI+8Sj0yETijFUK8qRKCUqC
-8LK0+5s/6170jW5C5BPO/qM=
------END ENCRYPTED PRIVATE KEY-----`;
+const payload = `${nonce}${timestamp}`;
+const signer = crypto.createSign('sha256');
+signer.update(payload);
+signature = signer.sign({key: privateKey , passphrase : ''}, 'base64');
 ```
 
-<em>C#</em>
+#### Troubleshooting
 
-```csharp
-var apiKey = "ed8f179d-cd8a-4dcc-9e9a-120d44787d86";
-//Private key must be without -----BEGIN ENCRYPTED PRIVATE KEY----- and -----END ENCRYPTED PRIVATE KEY-----
-var privateKey = @"MIIC3TBXBgkqhkiG9w0BBQ0wSjApBgkqhkiG9w0BBQwwHAQIgiEmpW3i8ccCAggA
-        MAwGCCqGSIb3DQIJBQAwHQYJYIZIAWUDBAEqBBDtIerHEx69L1zC6FG3UDJ6BIIC
-        gJ/cU/utsW6FuQ3QFvQjOLyeErn18p8Jer/v1ejLEuZ741h3Tt79MjlvHkAfL+4r
-        mUQbO+MotpzoehI7oKfdSvC8Vi6x6R9QRmr4PLtUaUZrbM82ZwvWpaVqoSRAnL+r
-        Xvsyy7bNRyCjbPmMd+x3c111Q3ZVJro+3p89n/x3R987vM+J7+wabgRhntlSMB1p
-        I+cbesfJaQPbZ+qYAreef2Tzy4gk0NJOwNhjWjvICBsaZI8sxNwDmA3sZ01nkh9g
-        GC8yBIgJsPaMoix7wvTScd+5YFXlNO5EWWndeD6eNt1c2ui7UdmvOhGND+s9I2b/
-        G6I1agW7vyd3M6MO4BBDqHk0BxQ20J4ORRuBvGFPfHScMCbAdd2SrKxD0GZd6F/n
-        J9hyBF3NEsL8U8uXZ/XHUHzALbYHCPpdlEVHwPatdHmw5g/iZDO2xaeNxDvBKhxN
-        /d7P1O3By2QVowkO4Carv7er0U9gEiYPpP8QNSEEbgAcKue+weU+atbEeKf9lNIz
-        dsik1kHZWRlLYq4IxnNxXvMsXhrVZT019uJvY5kfaeHatHpCoSdhXqXJ2F6nHUc/
-        4FsoKGVvA5wB248slueZgJX/khPPbYAWANbK9R5WzJefr+RUrhieCoNksvHm0Bew
-        EFz8H5AzW197eRtVtSvFGAS+3rhV/vG9WBtoOR0FgmkN9xpzJnb9j6Svwf9NKlds
-        pK7f+JVmZy6NaEBJvGQAvLWHc9Jc0PxvmIgc3vaPxl+l+AITS7kN3EORyDrdvJ9q
-        8hP6slgnVaHcgEJSUhSyD+yustfNUfH7Fg3rUM2nvkI+8Sj0yETijFUK8qRKCUqC
-        8LK0+5s/6170jW5C5BPO/qM=";
-var host = "sdf923e2s....etorox.com";
-```
+* [Example of dummy signature process ](https://gist.github.com/etorox/457009e1e02bdf878225da09fdb64acf)
+* [Convert pkcs8 to pkcs1 using openssl native](https://gist.github.com/etorox/094eb6d22cf83d72218d2d28ff304bc4)
 
-#### Step 2 - Connect to server
-
-<em>Node.JS</em>
-
-```js
-const signalR = require('@aspnet/signalr');
-const {v4} = require('uuid');
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl(`https://${webSocketsHost}/streams/v1/${apiKey}/signalr?correlationId=${v4()}` , {
-    transport : 1,
-  })
-  .configureLogging(signalR.LogLevel.Debug)
-  .build();
-
-await connection.start();
-```
-
-<em>C#</em>
-
-```csharp
-var url = $"https://{host}/streams/v1/{apiKey}/signalr?correlationId={Guid.NewGuid()}";
-var connection = new HubConnectionBuilder()
-                 .WithUrl(url, HttpTransportType.WebSockets)
-                 .ConfigureLogging(logging =>
-                 {
-                     logging.AddConsole();
-                     logging.SetMinimumLevel(LogLevel.Warning);
-                 })
-                 .Build();
-
-await connection.StartAsync().ContinueWith(task =>
-{
-    if (task.IsFaulted)
-    {
-        Console.WriteLine("There was an error opening the connection:{0}",
-                          task.Exception.GetBaseException());
-    }
-    else
-    {
-        Console.WriteLine("Connected");
-    }
-
-});
-```
 
 <br>
 
-#### Step 3 - Authentication
+### Messages
 
-At this stage, a WebSocket connection has already been created. The user must identify with the `setup` action.
+Every message has default header as described
 
-* See the authentication process described in the section [eToroX authentication](authentication).
-* See WebSocket data, actions and streams, described in the [Websockets API](websockets-api).
+<em>Default header:</em>
 
-<em>Node.JS</em>
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| MsgType | string | Yes | The type of the message |
+| CorrelationID | string | Yes | GUID (lowercase with dashes) represents the glue between multiple components |
+| SendingTime | UTCTimestamp | Yes |  The date/time message was sent |
+| SenderSubID | string | No | The internal identifier for trading operations. Available options:<br>`Operator` (BO)<br>`User` (default - no need send it)<br>`Creditline`<br>`System` |
 
-```js
-const {createSign} = require('crypto'); 
-const {v4} = require('uuid');
+<em>Business Message Reject (j)</em>
 
-const nonce = v4();
-const timestamp = Date.now();
+Represents the rejection for the request not tied to specific reject message.  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_j_106.html
 
-const signer = createSign('sha256');
-signer.update(`${nonce}${timestamp}`);
-const signature = signer.sign({key:privateKey , passphrase : ''}, 'base64');
-```
 
-<em>C#</em>
-
-```csharp
- var nonce = Guid.NewGuid().ToString();
-var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
- var payload = $"{nonce}{timestamp}";
-
-var key = CngKey.Import(Convert.FromBase64String(privateKey), CngKeyBlobFormat.Pkcs8PrivateBlob);
-
-var signer = new RSACng(key);
-var sign = signer.SignData(Encoding.UTF8.GetBytes(payload), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-var signature = Convert.ToBase64String(sign);
-
-var authParams = new
-{
-    apiKey,
-    nonce,
-    timestamp,
-    signature
-};
-```
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| BusinessRejectReason | string | Yes | The reason for the rejection. Available options:<br>`0` - Other<br>`3` - Unsupported Message Type<br>`4` - Application not available<br>`6` - Not authorized |
+| Text | string | No | Optionable free text |
 
 <br>
 
-#### Step 3 - Setup connections
+<em>Test Request (1)</em>
 
-Once you have the authentication parameters, you can now easily set up the connections.<br>With the authentication parameters it's now very simple to setup the connections:
+Message for testing the connection.  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_1_1.html
 
-<em>Node.JS</em>
-
-```js
-const setupResult = await connection.invoke('setup', {
-      apiKey,
-      nonce,
-      timestamp,
-      signature
-    });
-
-if (setupResult.status === 'success'){
-    //..Setup was successful
-}
-else{
-    //..Setup failed
-}
-```
-
-<em>C#</em>
-
-```csharp
-await connection.InvokeAsync<dynamic>("setup", authParams).ContinueWith(task =>
-{
-    if (task.IsFaulted)
-    {
-        Console.WriteLine("There was an error calling send: {0}",
-                          task.Exception.GetBaseException());
-    }
-    else
-    {
-        Console.WriteLine("Auth: " + task.Result);
-    }
-});
-```
-
-#### Step 4 - Subscribe
-
-At this stage, a WebSocket connection has already been created and connection had been `setup`. The user must `subscribe` and stream the desired events.
-
-<em>Node.JS</em>
-
-```js
-const setupResult = await connection.invoke('setup', {
-      apiKey,
-      nonce,
-      timestamp,
-      signature
-    });
-
-if (setupResult.status === 'success'){
-    //..Setup was successful
-}
-else{
-    //..Setup failed
-}
-```
-
-<em>C#</em>
-
-```csharp
-var cancellationTokenSource = new CancellationTokenSource();
-var channel = await connection.StreamAsChannelAsync<dynamic>("subscribe", new { 
-    channels = new string[] { "btcusdex","btceurx" },
-    event = "marketData",
-    fields = new string[] {"price","state","volume"}
-}, cancellationTokenSource.Token);
-
-// Wait asynchronously for data to become available
-while (await channel.WaitToReadAsync())
-{
-    // Read all currently available data synchronously, before waiting for more data
-    while (channel.TryRead(out var data))
-    {
-        //here all events will be
-        Console.WriteLine($"{data}");
-    }
-}
-```
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| TestReqID | string | Yes | Unique identifier of the Test Request message in current session |
 
 <br>
 
-### eToroX WebSockets Events
+<em>Heartbeat (0)</em>
 
-Market events are triggered on every market change, this keeps the user aware of the current state of a market.
-There are two types of channels, public and private.
+Response for Test Request message sent by client  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_0_0.html
 
-#### Public events
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| TestReqID | string | No | Echo-backed Test Request identifier sent by client |
 
-The public channel holds any changes that affects the market. Events published to the public channel are relevant for all users that are trading a certain market.
+<br>
 
-#### Private events
+<em>Market Data Request (V)</em>
 
-Sensitive information is provided on private channel only. Private messages has slightly different format which includes additional details that are only available to the user subscribed on his own orders and trades.
-The private events holds information of the user's positions and trades.
-  
-#### Events types
+Represents the request for snapshot or incremental updates  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_V_86.html
 
-Events are triggered on every market change, such as a newly opened position or a trade.<br>Here is a list of the possible events that are published to webSocket:
 
-* order created
-* order cancelled 
-* order updated
-* order completed
-* trade completed
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| MDReqID | string | Yes | Unique market data request identifier in current session |
+| SubscriptionRequestType | string | Yes | Type of request. Available options:<br>`1` - Snapshot + Updates (Subscribe)<br>`2` - Disable previous Snapshot + Update Request (Unsubscribe) |
+| MDUpdateType | string | Yes | Type of updates. Available options:<br>`0` - Full Refresh<br>`1` - Incremental Refresh |
+| MarketDepth | number | Yes | The depth of snapshot. |
+| MDEntryTypes | string[] | Yes | Requested market data atoms for updates. Available options:<br>`0` - Bid<br>`1` - Offer<br>`2` - Trade |
+| Symbols | string[] | Yes | Symbols to subscribe on. |
 
-Those events are relevant for private and public channels, which means any market change will trigger 2 events to be published, one to the private channel (of the user performing the action) and another one to the public channel, with slightly different format.
+<br>
 
-The following section will describe the events triggering a message and the expected data which the user subscribed will receive on public channel and on private channel separately.
+<em>Market Data Request Reject (Y)</em>
 
-##### Order Created
+Represents the rejection message for Market Data Request  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_Y_89.html
 
-Order created event will be triggered when a new position is published. A message to private channel will be sent only to the user opening the position.
 
-<em>Private message</em>
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| MDReqID | string | Yes | Market data request identifier sent by client |
+| MDReqRejReason | string | Yes | Reason of the reject. Available options:<br>`0` - Unknown symbol<br>`1` - Duplicated MDReqID<br>`3` - Insufficient Permissions<br>`4` - Unsupported SubscriptionRequestType<br>`5` - Unsupported MarketDepth<br>`6` - Unsupported MDUpdateType<br>`8` - Unsupported MDEntryType<br>`99` - Other |
+| Text | string | No | Optionable free text |
 
-```json 
-{
-	"market": "btcusd",
-	"side": "bid",
-	"id": "466e190f-55eb-457e-b4b7-8393f7f01a7b",
-	"name": "order_created",
-	"volume": 1,
-	"strategy": "limit",
-	"price": 1.4,
-	"state": "wait",
-	"updated_at": "2020-08-03T10:16:17.631Z",
-	"tif": "gtc"
-}
-```
 
-<em>Public message</em>
+<br>
 
-```json
- {
-	"market": "btcusd",
-	"side": "bid",
-	"name": "order_created",
-	"volume": 1,
-	"price": 1.4,
-	"state": "wait",
-	"updated_at": "2020-08-03T10:16:17.631Z",
-	"id": "466e190f-55eb-457e-b4b7-8393f7f01a7b"
-}
-```
+<em>Market Data Snapshot Full Refresh (W)</em>
 
-##### Order Updated
+Response for Market Data Request message as initial Snapshot message or ongoing MDUpdateType Full Refresh  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_W_87.html
 
-Order updated event will be triggered when a position was updated, such as in cases of partial fill of an order, when the original order has changed.
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| MDReqID | string | Yes | Echo-backed **MDReqID** sent in Market Data Request message |
+| Symbol | string | Yes | The symbol on which market data snapshot reported |
+| Entries | object[] | Yes | The updated atoms reported.<br>See table below. |
 
-<em>Private message</em>
 
-```json 
-{
-	"market": "btcusd",
-	"side": "ask",
-	"name": "order_updated",
-	"strategy": "limit",
-	"volume": 89.6435,
-	"price": 2.1,
-	"delta": "-1.5",
-	"state": "open",
-	"updated_at": "2020-08-03T10:23:55.879Z",
-	"tif": "gtd",
-	"expiration_date": "2020-09-03T10:23:55.879Z",
-	"id": "be84045a-2471-412f-b205-b38cf714fbd4"
-}
-```
+<br>
 
-<em>Public message</em>
+<em>Market Data Snapshot Full Refresh (W) Entries</em>
 
-```json
-{
-	"market": "btcusd",
-	"side": "ask",
-	"name": "order_updated",
-	"volume": 89.6435,
-	"price": 2.1,
-	"delta": "-1.5",
-	"state": "open",
-	"updated_at": "2020-08-03T10:23:55.879Z",
-	"id": "be84045a-2471-412f-b205-b38cf714fbd4"
-}
-```
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| MDEntryType | string | Yes | Market data atom type. Available options:<br>`0` - Bid<br>`1` - Offer<br>`2` - Trade |
+| MDEntryPx | number | Yes | Price of atom |
+| MDEntrySize | number | Yes | Size of atom |
 
-##### Order Cancelled
 
-Order cancelled event will be triggered when a position was cancelled by the position holder or by the system. A message to private channel will be sent only to the user holding the position.
+<br>
 
-<em>Private message</em>
+<em>Market Data Incremental Refresh (X)</em>
 
-```json 
-{
-	"price": 1.4,
-	"strategy": "limit",
-	"delta": -1,
-	"volume": 1,
-	"market": "btcusd",
-	"id": "466e190f-55eb-457e-b4b7-8393f7f01a7b",
-	"side": "bid",
-	"name": "order_canceled",
-	"state": "cancelled",
-	"updated_at": "2020-08-03T10:17:36.592Z",
-	"tif": "gtc"
-}
-```
-<em>Public message</em>
+Response for Market Data Request message with MDUpdateType Incremental Refresh  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_X_88.html
 
-```json
-{
-	"origin_volume": 1,
-	"price": 1.4,
-	"id": "466e190f-55eb-457e-b4b7-8393f7f01a7b",
-	"volume": 1,
-	"delta": -1,
-	"market": "btcusd",
-	"name": "order_canceled",
-	"side": "bid",
-	"state": "cancelled",
-	"update_at": "2020-08-03T10:17:36.592Z"
-}
-```
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| MDReqID | string | Yes | Echo-backed **MDReqID** sent in Market Data Request message |
+| Symbol | string | Yes | The symbol on which market data snapshot reported |
+| Entries | object[] | Yes | The updated atoms reported.<br>**See table below**. |
 
-##### Order Completed
+<br>
 
-Order completed event will be triggered when a position was closed due to a trade. A message to the private channel will be sent to the holders of the orders involved in the trade.
+<em>Market Data Incremental Refresh (X) Entries </em>
 
-<em>Private message</em>
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| Symbol | string | Yes | The corresponding symbol in entry of array |
+| MDUpdateAction | string | Yes | Type of action.  Available options:<br>`0` - New<br>`2` - Delete |
+| MDEntryType | string | Yes | Market data atom type. Available options:<br>`0` - Bid<br>`1` - Offer<br>`2` - Trade |
+| MDEntryPx | number | Yes | Price |
+| MDEntrySize | number | Yes | Size |
+| MDEntryTime | string | Yes | Operation datetime |
 
-```json 
-{
-	"id": "94b75864-8cbe-44e1-a638-98fc5b9e2804",
-	"market": "btcusd",
-	"side": "ask",
-	"name": "order_completed",
-	"volume": 1,
-	"strategy": "limit",
-	"price": 0.5,
-	"state": "completed",
-	"updated_at": "2020-08-03T10:18:37.578Z"
-}
-```
+<br>
 
-<em>Public message</em>
+<em>Execution Report (8)</em>
 
-```json
-{
-	"id": "94b75864-8cbe-44e1-a638-98fc5b9e2804",
-	"market": "btcusd",
-	"side": "ask",
-	"name": "order_completed",
-	"volume": 1,
-	"delta": -1,
-	"price": 0.5,
-	"state": "completed",
-	"updated_at": "2020-08-03T10:18:37.578Z"
-}
-```
+Represents the notification about order status change that was previously accepted by the system  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_8_8.html
 
-##### Trade Completed
+> Not eligible for OpenGarden
 
-Trade completed event will be triggered when a trade was performed. A message to the private channel will be sent to the holders of the orders involved in the trade.
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| ClOrdID | string | Yes | The original **ClOrdId** sent by client, echo-back for client request |
+| OrderID | string | Yes | Order identifier in the system |
+| ExecID | string | Yes | Life-time unique execution id corresponds to the report |
+| ExecType | string | Yes | Represents the type of the report.  Available options:<br>`0` - New (order placed)<br>`4` - Canceled (order has been canceled)<br>`C` - Expired (order has been expired)<br>`D` - Restated (order has been updated)<br>`F` - Trade (order was filled or partially filled) |
+| OrdStatus | string | Yes | The current status of the order. Available options:<br>`0` - New (new order)<br>`1` - Partial<br>`2` - Filled<br>`4` - Canceled<br>`C` - Expired |
+| Symbol | string | Yes | The order symbol |
+| Side | string | Yes | Side of the order. Available options:<br>`1` - Buy<br>`2` - Sell |
+| OrdType | string | Yes | The type of order. Available options:<br>`1` - Market<br>`2` - Limit<br>`3` - Stop<br>`4` - Stop Limit |
+| Price | number | Yes* | Order price. | Conditionally required if **OrdType** is `Limit` or `Stop Limit`|
+| LastQty | number | Yes* | The last quantity filled in the order. | Conditionally required if **ExecType** is `Trade` |
+| LastPx | number | Yes* | The last price filled in the order.<br>Conditionally required if **ExecType** is `Trade` |
+| LeavesQty | number | Yes | Remaining quantity to execute in the order |
+| CumQty | number | Yes | Total executed quantity | 
+| OrderQty | number | Yes | Original order quantity |
+| AvgPx | number | Yes | The average price in all executions in the order |
+| TransactTime | UTCTimestamp | Yes | The date/time of the execution report was generated |
+| ExecRestatementReason | string | Yes* | The reason for order restatement.<br>Conditionally required if **ExecType** is `Restated`. Available options:<br>`4` - Broker option<br>`99` - Other |
+| SecondaryOrderID | string | No | The order identifier in the system for triggered orders as a result of `Stop` or `Stop Limit` order types |
+| DisplayQty | number | No | The display quantity in the order book in case of iceberg order |
+| LastLiquidityInd | string | No | Indicator whether order execution produced liquidity or removed it. Available options:<br>`1` - Added Liquidity<br>`2` - Removed Liquidity |
+| StopPx | number | Yes* |The stop price.<br>Conditionally required if **OrdType** is `Stop` or `Stop Limit` |
+| TimeInForce | string | Yes | Execution strategy of the order. Available options:<br>`1` - Good Till Cancel (GTC)<br>`3` - Immediate or Cancel (IOC)<br>`4` - Fill or Kill (FOK)<br>`6` - Good Till Date (GTD) |
+| ExpireTime | UTCTimestamp | Yes* | The expiration date/time for the order.<br>Conditionally required if **TimeInForce** is `GTD` |
 
-<em>Private message</em>
+<br>
 
-```json 
-{
-	"market": "btcusd",
-	"id": "b1e4f403-d572-11ea-afd6-42010adc003c",
-	"price": 2,
-	"volume": 1,
-	"side": "ask",
-	"name": "trade_completed",
-	"state": "completed",
-	"created_at": "2020-08-03T10:18:37.578Z",
-	"order_id": "94b75864-8cbe-44e1-a638-98fc5b9e2804",
-	"execution_type": "taker"
-}
-```
-<em>Public message</em>
+<em>Trade Capture Report (AE)</em>
 
-```json
-{
-	"tid": "b1e4f403-d572-11ea-afd6-42010adc003c",
-	"price": 2,
-	"amount": "1.000000000000000000",
-	"created_at": "2020-08-03T10:18:37.578Z",
-	"name": "trade_completed",
-	"market": "btcusd"
-}
-```
+Represents the notification about trade handled by the matching system.  
+https://www.onixs.biz/fix-dictionary/4.4/msgType_AE_6569.html
+
+> Not eligible for OpenGarden
+
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| TradeReportID | string | Yes | The life-time unique identifier of the report |
+| ExecID | string | Yes | Life-time unique execution id corresponds to the report |
+| Symbol |  string | Yes | The symbol on which trade has occurred |
+| LastQty | number | Yes | The quantity of the trade |
+| LastPx | number | Yes* | The price of the trade |
+| TransactTime | UTCTimestamp | Yes | The date/time of the trade report was generated |
+| Sides | object[] | Yes | The sides participated in the trade report.<br>**See table below**. |
+
+<br>
+
+<em>Trade Capture Report (AE) Sides</em>
+
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| Side | string | Yes | Side of the order. Available options:<br>`1` - Buy<br>`2` - Sell |
+| OrderID | string | Yes | Order identifier in the system |
+| ClOrdID | string | Yes | The client order identifier associated with the order |
+| SecondaryOrderID | string | No | The associated order identifier in the system for as a result of `Stop` or `Stop Limit` order types |
+| Currency | string | Yes | The currency is was taken/given from/to account |
+| OrdType | string | Yes | The type of order. Available options:<br>`1` - Market<br>`2` - Limit<br>`3` - Stop<br>`4` - Stop Limit |
+| Commission | number | Yes | The commission are taken from the account as a result of trade execution |
+| CommType| string | Yes | The commission type. Available options:<br>`3` - Absolute |
+| CommCurrency | string | Yes | The commission currency |
+| Parties | object[] | Yes | The counterparties included in this trade.<br>**See table below**. |
+
+<br>
+
+<em>Trade Capture Report (AE) Side Parties</em>
+
+| Name | Type | Mandatory | Description |
+| ---- | ---- | --------- | ----------- |
+| PartyID | string | Yes | The MD5 hashed counterparty **Account** field |
+| PartyRole | int | Yes | Role of the counterparty. Available values:<br>`17` - ContraFirm |
+| PartyIDSource | string | Yes | The kind of PartyID. Available values:<br>`D` - Proprietary/Custom code |
+
+
+
