@@ -22,7 +22,7 @@ eToroX WebSocket streaming servers offer real-time market data updates using ser
 ### General
 
 * WebSocket endpoint will be exposed with DNS ws.etorox.com
-* All WebSocket messages are JSON formatted messages separated by a special space-like character \`\` (`0x1e`).
+* All WebSocket messages are JSON formatted messages separated by a special space-like character \` \` (`0x1e`).
 
 <br>
 
