@@ -2,15 +2,18 @@
 
 <br>
 
-# eToroX API Documentation 3rd revision
+# eToroX API Documentation
 <br>
 
 <br>
 
 <br>
+
+## REST API
+<hr>
 
 ## General API Information
-<hr>
+
 
 ### Rate Limit
 
